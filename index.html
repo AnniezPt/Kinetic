@@ -11,18 +11,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'kin-blue': '#0047ff', 'kin-bg': '#f4f5f9', 'kin-dark': '#1e2024',
-                        'kin-orange': '#b5531d', 'kin-brown': '#8b4513'
-                    },
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-                }
-            }
-        }
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({ appId: "03eed6ad-5f71-4f70-82f8-ae94defc8823" });
+      });
     </script>
 </head>
 <body class="text-kin-dark pb-32">
@@ -32,7 +26,7 @@
             <img id="header-avatar-img" src="" class="w-12 h-12 rounded-xl object-cover shadow-sm border-2 border-white" onclick="changeAvatar('my')">
             <div>
                 <h1 class="font-black tracking-tighter text-2xl text-kin-blue leading-none">KINETIC</h1>
-                <span class="text-[9px] font-bold uppercase tracking-widest text-green-500">Sincronización Activa</span>
+                <span id="sync-status" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">Conectando...</span>
             </div>
         </div>
         <button onclick="requestOneSignalPush()" class="w-11 h-11 bg-white rounded-xl flex items-center justify-center text-slate-400 relative shadow-sm">
@@ -50,11 +44,11 @@
 
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-50 flex flex-col items-center">
-                    <p class="text-[9px] font-black text-kin-blue uppercase mb-4">TÚ</p>
+                    <p class="text-[9px] font-black text-kin-blue uppercase mb-4 tracking-widest">TÚ</p>
                     <div class="relative w-24 h-24 mb-4">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                             <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="3"></path>
-                            <path id="dash-my-cal-svg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#0047ff" stroke-width="3" stroke-linecap="round"></path>
+                            <path id="dash-my-cal-svg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#0047ff" stroke-width="3" stroke-linecap="round" class="transition-all duration-1000"></path>
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center font-black text-sm" id="dash-my-cal-text">0%</div>
                     </div>
@@ -65,11 +59,11 @@
                 </div>
 
                 <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-50 flex flex-col items-center">
-                    <p class="text-[9px] font-black text-kin-brown uppercase mb-4">COMPA</p>
+                    <p class="text-[9px] font-black text-kin-brown uppercase mb-4 tracking-widest">COMPA</p>
                     <div class="relative w-24 h-24 mb-4">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                             <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="3"></path>
-                            <path id="dash-partner-cal-svg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#8b4513" stroke-width="3" stroke-linecap="round"></path>
+                            <path id="dash-partner-cal-svg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#8b4513" stroke-width="3" stroke-linecap="round" class="transition-all duration-1000"></path>
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center font-black text-sm" id="dash-partner-cal-text">0%</div>
                     </div>
@@ -97,10 +91,9 @@
         <section id="view-shared" class="view-section">
             <div class="flex justify-between items-center mb-8 pt-6">
                 <div class="flex flex-col">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Plan Mensual</p>
                     <div class="flex items-center gap-3">
                         <button onclick="changeMonth(-1)" class="text-slate-300"><i class="ph-bold ph-caret-left"></i></button>
-                        <h2 id="calendar-month-title" class="text-3xl font-black tracking-tighter italic text-slate-800 uppercase w-40 text-center">Abril</h2>
+                        <h2 id="calendar-month-title" class="text-3xl font-black tracking-tighter italic text-slate-800 uppercase w-40 text-center">---</h2>
                         <button onclick="changeMonth(1)" class="text-slate-300"><i class="ph-bold ph-caret-right"></i></button>
                     </div>
                 </div>
@@ -123,14 +116,11 @@
             </div>
 
             <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center mb-10"></div>
-            
             <div id="upcoming-duos-container" class="space-y-4 mb-10"></div>
         </section>
 
         <section id="view-workout" class="view-section"><div id="workout-groups-container" class="space-y-4 pt-6"></div></section>
         <section id="view-notes" class="view-section"><div id="notes-container" class="space-y-6 pt-6"></div></section>
-        <section id="view-profile" class="view-section"><div id="profile-container" class="pt-10"></div></section>
-
     </main>
 
     <nav class="fixed bottom-0 w-full bg-white/95 backdrop-blur-xl border-t border-slate-100 flex justify-between items-center px-2 py-4 max-w-md mx-auto left-0 right-0 z-50 shadow-2xl">
