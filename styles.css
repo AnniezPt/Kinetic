@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+body { 
+    background-color: #f4f5f9; 
+    font-family: 'Inter', sans-serif; 
+    -webkit-tap-highlight-color: transparent; 
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
+.nav-item { 
+    color: #94a3b8; 
+    transition: all 0.2s; 
+}
+
+.nav-item.active { 
+    color: #0047ff; 
+}
+
+.nav-item.active .icon-bg { 
+    background-color: #e5edff; 
+    border-radius: 8px; 
+}
+
+.fade-in { 
+    animation: fadeIn 0.3s ease-in-out; 
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.view-section { 
+    display: none; 
+}
+
+.view-section.active { 
+    display: block; 
+    animation: fadeIn 0.3s ease-in-out; 
+}
+
+/* Custom Toggle Switch Styles */
+.toggle-switch { 
+    transition: background-color 0.3s; 
+}
+
+.toggle-knob { 
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); 
+}
+
+.toggle-on .toggle-switch { 
+    background-color: #0047ff; 
+}
+
+.toggle-on .toggle-knob { 
+    transform: translateX(24px); 
+}
+
+.toggle-off .toggle-switch { 
+    background-color: #cbd5e1; 
+}
+
+.toggle-off .toggle-knob { 
+    transform: translateX(0); 
+}
