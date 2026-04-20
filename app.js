@@ -42,23 +42,23 @@ const appState = {
     },
     journal: {
         goals: savedGoals || [
-            { id: 1, title: "Lograr Peso Muerto 230kg", subtitle: "Fecha est.: Dic 2023", done: true },
+            { id: 1, title: "Lograr Peso Muerto 230kg", subtitle: "Meta Est.: Dic 2026", done: true },
             { id: 2, title: "Dominar Muscle Up", subtitle: "Enfoque en fuerza gimnástica", done: false }
         ],
         notes: savedNotes || [
-            { id: 1, day: "24", monthYear: "OCT 2023", title: "Análisis de Fatiga Post-Día de Pierna", content: "El tren inferior se sintió sorprendentemente pesado en las tres primeras series de sentadillas. Noté una ligera inestabilidad en la rodilla izquierda en los levantamientos pesados a 140kg. El horario nutricional estuvo desfasado por 2 horas...", img: "", tags: ["AnálisisRecuperación", "DíaDePierna"] },
-            { id: 2, day: "22", monthYear: "OCT 2023", title: "Día de RP: Energía Cinética Pura", content: "Increíble sesión hoy. El press de banca se sintió como mover aire. Logré el single de 100kg con precisión técnica. Niveles de energía 10/10 durante todo el entreno. El cambio de suplemento pre-entreno está funcionando...", img: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=1400", tags: ["RécordPersonal", "Empuje"] }
+            { id: 1, day: "20", monthYear: "ABR 2026", title: "Análisis de Fatiga Post-Día de Pierna", content: "El tren inferior se sintió sorprendentemente pesado. Noté una ligera inestabilidad en la rodilla izquierda. Mañana toca recuperación activa.", img: "", tags: ["Análisis", "Pierna"] },
+            { id: 2, day: "18", monthYear: "ABR 2026", title: "Día de RP: Energía Cinética Pura", content: "Increíble sesión hoy. El press de banca se sintió como mover aire. Logré el single de 100kg con precisión técnica.", img: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=1400", tags: ["RP", "Empuje"] }
         ]
     },
     shared: savedShared || {
         myAvatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=100",
         partnerAvatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=100",
         upcoming: [
-            { id: 1, dayStr: "Vie", dayNum: "11", title: "INTENSIDAD CUERPO COMPLETO", time: "07:00 AM — 08:30 AM" }
+            { id: 1, dayStr: "Lun", dayNum: "20", title: "INTENSIDAD CUERPO COMPLETO", time: "07:00 AM — 08:30 AM" }
         ],
         past: [],
-        calendar: { 1: 'you', 3: 'synced', 11: 'synced' },
-        selectedDay: 11
+        calendar: { 20: 'synced' },
+        selectedDay: 20
     },
     timer: {
         timeLeft: 74, 
@@ -143,7 +143,16 @@ function promptEditStat(type) {
     }
 }
 
-// 6. LÓGICA DE ENTRENAMIENTOS
+// 6. LÓGICA DE NOTIFICACIONES (ONESIGNAL)
+function requestOneSignalPush() { 
+    OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.Slidedown.promptPush(); 
+    });
+    const badge = document.getElementById('bell-badge');
+    if(badge) badge.style.display = 'none';
+}
+
+// 7. LÓGICA DE ENTRENAMIENTOS
 function openGroupDetail(groupId) {
     appState.currentGroupView = groupId;
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -289,9 +298,10 @@ function finishSession() {
     }
 }
 
-// 7. LÓGICA DE NUTRICIÓN Y DIETA
+// 8. LÓGICA DE DIETA Y NUTRICIÓN
 function renderHydration() {
     const container = document.getElementById('hydration-container');
+    if(!container) return;
     container.innerHTML = '';
     let filledCount = 0;
     appState.nutrition.hydration.forEach((isFilled, index) => {
@@ -304,7 +314,8 @@ function renderHydration() {
     const liters = (filledCount * 0.7).toFixed(1);
     document.getElementById('hydration-text').innerText = `${liters}L / 3.5L`;
     const percentage = (filledCount / 5) * 100;
-    document.getElementById('hydration-bar').style.width = `${percentage}%`;
+    const bar = document.getElementById('hydration-bar');
+    if(bar) bar.style.width = `${percentage}%`;
 }
 
 function toggleHydration(index) {
@@ -317,6 +328,7 @@ function renderNutrition() {
     const goals = appState.nutrition.macroGoals;
     let sumKcal = 0, sumP = 0, sumC = 0, sumF = 0;
     const container = document.getElementById('meals-container');
+    if(!container) return;
     container.innerHTML = '';
     appState.nutrition.meals.forEach((meal, index) => {
         sumKcal += meal.kcal;
@@ -343,153 +355,12 @@ function renderNutrition() {
     });
     const remKcal = Math.max(0, appState.nutrition.dailyGoalKcal - sumKcal);
     document.getElementById('nutrition-rem-kcal').innerText = remKcal.toLocaleString();
-    document.getElementById('macro-p-consumed').innerText = sumP;
-    document.getElementById('macro-c-consumed').innerText = sumC;
-    document.getElementById('macro-f-consumed').innerText = sumF;
-    document.getElementById('macro-p-bar').style.width = `${Math.min(100, (sumP / goals.p) * 100)}%`;
-    document.getElementById('macro-c-bar').style.width = `${Math.min(100, (sumC / goals.c) * 100)}%`;
-    document.getElementById('macro-f-bar').style.width = `${Math.min(100, (sumF / goals.f) * 100)}%`;
 }
 
-function openMealModal() {
-    document.getElementById('meal-modal').classList.remove('hidden');
-}
-
-function closeMealModal() {
-    document.getElementById('meal-modal').classList.add('hidden');
-    document.getElementById('meal-name').value = '';
-    document.getElementById('meal-img').value = '';
-    document.getElementById('meal-kcal').value = '';
-    document.getElementById('meal-p').value = '';
-    document.getElementById('meal-c').value = '';
-    document.getElementById('meal-f').value = '';
-}
-
-function saveNewMeal() {
-    const type = document.getElementById('meal-type').value;
-    const name = document.getElementById('meal-name').value || "Sin descripción";
-    let img = document.getElementById('meal-img').value;
-    const kcal = parseInt(document.getElementById('meal-kcal').value) || 0;
-    const p = parseInt(document.getElementById('meal-p').value) || 0;
-    const c = parseInt(document.getElementById('meal-c').value) || 0;
-    const f = parseInt(document.getElementById('meal-f').value) || 0;
-    if (!img) img = "https://images.unsplash.com/photo-1490818387583-1b5ba45227fa?auto=format&fit=crop&q=80&w=1400";
-    appState.nutrition.meals.push({ id: Date.now(), type, name, img, kcal, p, c, f });
-    saveState();
-    renderNutrition();
-    closeMealModal();
-}
-
-function deleteMeal(index) {
-    if(confirm('¿Eliminar esta comida de tu ingesta diaria?')) {
-        appState.nutrition.meals.splice(index, 1);
-        saveState();
-        renderNutrition();
-    }
-}
-
-// 8. LÓGICA DEL DIARIO (METAS Y NOTAS)
-function renderGoals() {
-    const container = document.getElementById('goals-container');
-    container.innerHTML = '';
-    appState.journal.goals.forEach((goal, index) => {
-        const checkedAttr = goal.done ? 'checked' : '';
-        const textColorClass = goal.done ? 'text-kin-blue line-through opacity-80' : 'text-slate-800 group-hover:text-kin-blue';
-        container.innerHTML += `
-        <label class="flex items-start gap-3 mb-3 cursor-pointer group">
-            <input type="checkbox" ${checkedAttr} onchange="toggleGoal(${index})" class="mt-1 w-5 h-5 accent-kin-blue rounded-md border-slate-300 cursor-pointer">
-            <div>
-                <p class="font-bold transition-all duration-300 ${textColorClass}">${goal.title}</p>
-                <p class="text-xs text-slate-400 font-medium">${goal.subtitle}</p>
-            </div>
-        </label>`;
-    });
-}
-
-function toggleGoal(index) {
-    appState.journal.goals[index].done = !appState.journal.goals[index].done;
-    saveState();
-    renderGoals();
-}
-
-function renderNotes() {
-    const container = document.getElementById('notes-container');
-    container.innerHTML = '';
-    appState.journal.notes.forEach((note, index) => {
-        const imgHtml = note.img ? `<img src="${note.img}" class="w-full h-32 object-cover rounded-2xl mb-4" alt="Nota">` : '';
-        const tagsHtml = note.tags.map(tag => `<span class="bg-slate-100 text-slate-600 text-[9px] font-bold px-3 py-1.5 rounded-full uppercase">#${tag.trim()}</span>`).join('');
-        container.innerHTML += `
-        <div class="bg-white rounded-3xl p-6 shadow-sm relative group overflow-hidden border border-slate-100">
-            <button onclick="deleteNote(${index})" class="absolute top-4 right-4 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-50">
-                <i class="ph-bold ph-trash"></i>
-            </button>
-            ${imgHtml}
-            <p class="text-2xl font-black text-kin-blue leading-none mb-1">${note.day}</p>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">${note.monthYear}</p>
-            <h4 class="font-black text-xl mb-3 leading-tight pr-8">${note.title}</h4>
-            <p class="text-sm text-slate-500 font-medium leading-relaxed mb-4 whitespace-pre-wrap">${note.content}</p>
-            <div class="flex flex-wrap gap-2">
-                ${tagsHtml}
-            </div>
-        </div>`;
-    });
-}
-
-function openNoteModal() {
-    document.getElementById('note-modal').classList.remove('hidden');
-}
-
-function closeNoteModal() {
-    document.getElementById('note-modal').classList.add('hidden');
-    document.getElementById('note-title').value = '';
-    document.getElementById('note-content').value = '';
-    document.getElementById('note-img').value = '';
-    document.getElementById('note-tags').value = '';
-}
-
-function saveNewNote() {
-    const title = document.getElementById('note-title').value || "Nota sin título";
-    const content = document.getElementById('note-content').value;
-    const img = document.getElementById('note-img').value;
-    const tagsRaw = document.getElementById('note-tags').value;
-    const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(t => t) : [];
-    const today = new Date();
-    const months = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
-    const day = today.getDate().toString().padStart(2, '0');
-    const monthYear = `${months[today.getMonth()]} ${today.getFullYear()}`;
-    
-    appState.journal.notes.unshift({
-        id: Date.now(), day: day, monthYear: monthYear, title: title, content: content, img: img, tags: tags
-    });
-    
-    saveState();
-    renderNotes();
-    closeNoteModal();
-}
-
-function deleteNote(index) {
-    if(confirm('¿Seguro que quieres eliminar esta nota de tu diario?')) {
-        appState.journal.notes.splice(index, 1);
-        saveState();
-        renderNotes();
-    }
-}
-
-// 9. LÓGICA DE DÚO Y CALENDARIO INTERACTIVO
-function setDuoTool(tool) {
-    currentDuoTool = (currentDuoTool === tool) ? null : tool;
-    ['you', 'partner', 'synced'].forEach(t => {
-        const el = document.getElementById(`tool-${t}`);
-        if(currentDuoTool === t) {
-            el.classList.add('border-kin-blue', 'ring-2', 'ring-kin-blue/20', 'bg-blue-50');
-        } else {
-            el.classList.remove('border-kin-blue', 'ring-2', 'ring-kin-blue/20', 'bg-blue-50');
-        }
-    });
-}
-
+// 9. LÓGICA DE DÚO Y CALENDARIO
 function renderCalendar() {
     const container = document.getElementById('calendar-grid');
+    if(!container) return;
     let html = `
     <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lun</div>
     <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2">Mar</div>
@@ -520,7 +391,7 @@ function renderCalendar() {
     }
     
     container.innerHTML = html;
-    document.getElementById('duo-selected-date').innerText = `OCT ${appState.shared.selectedDay}`;
+    document.getElementById('duo-selected-date').innerText = `ABR ${appState.shared.selectedDay}`;
 }
 
 function handleDayClick(day) {
@@ -536,128 +407,87 @@ function handleDayClick(day) {
     renderCalendar();
 }
 
-function scheduleNewDuo() {
-    const title = document.getElementById('duo-session-title').value;
-    const start = document.getElementById('duo-start-time').value;
-    const end = document.getElementById('duo-end-time').value;
-    const dayNum = appState.shared.selectedDay || 1;
-    const daysArr = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-    const startDayIndex = 1; 
-    const dayStr = daysArr[(startDayIndex + dayNum - 1) % 7];
-    
-    if (!title) {
-        alert("Por favor, introduce un nombre para la sesión.");
-        return;
-    }
-    
-    appState.shared.upcoming.push({
-        id: Date.now(), dayStr: dayStr, dayNum: dayNum.toString().padStart(2, '0'), title: title.toUpperCase(), time: `${start} — ${end}`
-    });
-    
-    appState.shared.calendar[dayNum] = 'synced';
-    saveState();
-    renderSharedData();
-    renderCalendar(); 
-    document.getElementById('duo-session-title').value = '';
-    alert("¡Sesión programada con éxito!");
-}
-
-function renderSharedData() {
-    document.getElementById('my-avatar-img').src = appState.shared.myAvatar;
-    document.getElementById('partner-avatar-img').src = appState.shared.partnerAvatar;
-    
-    const headerAvatar = document.getElementById('header-avatar-img');
-    const profileAvatar = document.getElementById('profile-avatar-img');
-    if (headerAvatar) headerAvatar.src = appState.shared.myAvatar;
-    if (profileAvatar) profileAvatar.src = appState.shared.myAvatar;
-    
-    const upcomingContainer = document.getElementById('upcoming-duos-container');
-    upcomingContainer.innerHTML = '';
-    document.getElementById('upcoming-count').innerText = appState.shared.upcoming.length;
-    
-    appState.shared.upcoming.forEach((session, index) => {
-        upcomingContainer.innerHTML += `
-        <div class="bg-white rounded-2xl shadow-sm flex overflow-hidden border border-slate-100">
-            <div class="w-1.5 bg-kin-blue"></div>
-            <div class="p-4 flex flex-1 justify-between items-center relative">
-                <div class="flex items-center gap-4">
-                    <div class="text-center pr-4 border-r border-slate-100">
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${session.dayStr}</p>
-                        <p class="text-xl font-black text-slate-800 leading-none">${session.dayNum}</p>
-                    </div>
-                    <div>
-                        <h4 class="font-black text-sm text-slate-800">${session.title}</h4>
-                        <p class="text-[10px] text-slate-500 font-medium">${session.time}</p>
-                    </div>
-                </div>
-                <div class="flex mt-2 sm:mt-0">
-                    <img src="${appState.shared.myAvatar}" class="w-7 h-7 rounded-full border-2 border-white object-cover shadow-sm">
-                    <img src="${appState.shared.partnerAvatar}" class="w-7 h-7 rounded-full border-2 border-white -ml-2 object-cover shadow-sm">
-                </div>
-                <button onclick="completeSharedSession(${index})" class="absolute top-2 right-2 text-slate-300 hover:text-kin-blue transition-colors" title="Marcar como completada">
-                    <i class="ph-bold ph-check-circle text-lg"></i>
-                </button>
-            </div>
-        </div>`;
-    });
-    
-    const pastContainer = document.getElementById('past-duos-container');
-    pastContainer.innerHTML = '';
-    if(appState.shared.past.length === 0) pastContainer.innerHTML = '<p class="text-xs text-slate-400">No hay sesiones conjuntas pasadas.</p>';
-    
-    appState.shared.past.forEach(session => {
-        pastContainer.innerHTML += `
-        <div class="bg-white rounded-2xl p-4 flex gap-4 items-center shadow-sm opacity-80">
-            <div class="flex -space-x-3">
-                <img src="${appState.shared.myAvatar}" class="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm">
-                <img src="${appState.shared.partnerAvatar}" class="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm">
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">${session.dayStr} ${session.dayNum} Oct</p>
-                <h4 class="font-black text-slate-800">${session.title}</h4>
-                <p class="text-xs text-slate-500 font-medium">Completada con éxito</p>
-            </div>
-        </div>`;
+function setDuoTool(tool) {
+    currentDuoTool = (currentDuoTool === tool) ? null : tool;
+    ['you', 'partner', 'synced'].forEach(t => {
+        const el = document.getElementById(`tool-${t}`);
+        if(el) {
+            if(currentDuoTool === t) {
+                el.classList.add('border-kin-blue', 'ring-2', 'ring-kin-blue/20', 'bg-blue-50');
+            } else {
+                el.classList.remove('border-kin-blue', 'ring-2', 'ring-kin-blue/20', 'bg-blue-50');
+            }
+        }
     });
 }
 
-function changeAvatar(person) {
-    const newUrl = prompt('Pega la URL de la nueva foto de perfil (o déjalo en blanco):');
-    if (newUrl !== null) {
-        const defaultImage = "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=100";
-        if (person === 'my') appState.shared.myAvatar = newUrl || defaultImage;
-        if (person === 'partner') appState.shared.partnerAvatar = newUrl || defaultImage;
-        saveState();
-        renderSharedData();
-    }
-}
-
-function completeSharedSession(index) {
-    if(confirm('¿Marcar esta sesión Dúo como completada y moverla al historial?')) {
-        const session = appState.shared.upcoming.splice(index, 1)[0];
-        appState.shared.past.unshift(session);
-        saveState();
-        renderSharedData();
-    }
-}
-
-// 10. TEMPORIZADOR
+// 10. TEMPORIZADOR Y OTROS
 function startTimer() {
     if(appState.timer.interval) clearInterval(appState.timer.interval);
     appState.timer.interval = setInterval(() => {
-        if (appState.timer.timeLeft > 0 && document.getElementById('view-workout-active').classList.contains('active')) {
+        const view = document.getElementById('view-workout-active');
+        if (appState.timer.timeLeft > 0 && view && view.classList.contains('active')) {
             appState.timer.timeLeft--;
             const m = Math.floor(appState.timer.timeLeft / 60).toString().padStart(2, '0');
             const s = (appState.timer.timeLeft % 60).toString().padStart(2, '0');
-            document.getElementById('timer-display').innerText = `${m}:${s}`;
+            const display = document.getElementById('timer-display');
+            if(display) display.innerText = `${m}:${s}`;
         }
     }, 1000);
 }
 
 function resetTimer() {
     appState.timer.timeLeft = 74; 
-    document.getElementById('timer-display').innerText = `01:14`;
+    const display = document.getElementById('timer-display');
+    if(display) display.innerText = `01:14`;
     startTimer();
+}
+
+function renderSharedData() {
+    const myImg = document.getElementById('my-avatar-img');
+    const partImg = document.getElementById('partner-avatar-img');
+    if(myImg) myImg.src = appState.shared.myAvatar;
+    if(partImg) partImg.src = appState.shared.partnerAvatar;
+}
+
+function renderGoals() {
+    const container = document.getElementById('goals-container');
+    if(!container) return;
+    container.innerHTML = '';
+    appState.journal.goals.forEach((goal, index) => {
+        const checkedAttr = goal.done ? 'checked' : '';
+        const textColorClass = goal.done ? 'text-kin-blue line-through opacity-80' : 'text-slate-800';
+        container.innerHTML += `
+        <label class="flex items-start gap-3 mb-3 cursor-pointer">
+            <input type="checkbox" ${checkedAttr} onchange="toggleGoal(${index})" class="mt-1 w-5 h-5 accent-kin-blue rounded-md border-slate-300">
+            <div>
+                <p class="font-bold ${textColorClass}">${goal.title}</p>
+                <p class="text-xs text-slate-400 font-medium">${goal.subtitle || ''}</p>
+            </div>
+        </label>`;
+    });
+}
+
+function toggleGoal(index) {
+    appState.journal.goals[index].done = !appState.journal.goals[index].done;
+    saveState();
+    renderGoals();
+}
+
+function renderNotes() {
+    const container = document.getElementById('notes-container');
+    if(!container) return;
+    container.innerHTML = '';
+    appState.journal.notes.forEach((note, index) => {
+        const tagsHtml = note.tags.map(tag => `<span class="bg-slate-100 text-slate-600 text-[9px] font-bold px-3 py-1.5 rounded-full uppercase">#${tag}</span>`).join('');
+        container.innerHTML += `
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6">
+            <p class="text-2xl font-black text-kin-blue leading-none mb-1">${note.day}</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">${note.monthYear}</p>
+            <h4 class="font-black text-xl mb-3 leading-tight">${note.title}</h4>
+            <p class="text-sm text-slate-500 font-medium mb-4">${note.content}</p>
+            <div class="flex flex-wrap gap-2">${tagsHtml}</div>
+        </div>`;
 }
 
 // INICIALIZADOR
