@@ -3,14 +3,16 @@
 body { background-color: #f4f5f9; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
 ::-webkit-scrollbar { display: none; }
 
-.nav-item { color: #94a3b8; transition: all 0.2s; border-radius: 1.5rem; }
-.nav-item.active { color: #0047ff; background-color: #f8fafc; }
+.nav-item { color: #94a3b8; transition: all 0.2s; cursor: pointer; }
+.nav-item.active { color: #0047ff; }
 .nav-item.active .icon-bg { background-color: #e5edff; border-radius: 12px; }
 
-.view-section { display: none; padding-bottom: 5rem; }
-.view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+.view-section { display: none; animation: fadeIn 0.4s ease-out; }
+.view-section.active { display: block; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+.calendar-day { transition: all 0.2s; min-height: 55px; border-radius: 1.2rem; }
+.calendar-day.today { border: 2px solid #0047ff !important; background-color: #eff6ff; }
+
 .glass-modal { backdrop-filter: blur(12px); background-color: rgba(30, 32, 36, 0.4); }
-.no-scrollbar::-webkit-scrollbar { display: none; }
