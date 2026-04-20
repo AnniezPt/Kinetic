@@ -14,16 +14,16 @@
 
     <div id="profile-selector" class="fixed inset-0 z-[100] bg-[#0f1115] flex flex-col items-center justify-center p-10">
         <h1 class="text-6xl font-black italic tracking-tighter mb-2 text-[#0047ff]">KINETIC</h1>
-        <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 mb-24">Acceso Autorizado</p>
-        <div class="grid grid-cols-2 gap-12 w-full max-w-sm">
-            <button onclick="selectUser('ana')" class="flex flex-col items-center gap-5 group">
-                <div class="w-32 h-32 rounded-[3rem] bg-[#1c1f26] shadow-2xl border-2 border-slate-800 overflow-hidden group-active:scale-90 transition-all">
+        <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 mb-20">Identity Access</p>
+        <div class="grid grid-cols-2 gap-10 w-full max-w-sm">
+            <button onclick="selectUser('ana')" class="flex flex-col items-center gap-4 group">
+                <div class="w-32 h-32 rounded-[2.8rem] bg-[#1c1f26] border-2 border-slate-800 overflow-hidden active:scale-90 transition-all shadow-2xl">
                     <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
                 </div>
                 <span class="font-black uppercase tracking-widest text-slate-400 group-hover:text-white italic">Ana</span>
             </button>
-            <button onclick="selectUser('nestor')" class="flex flex-col items-center gap-5 group">
-                <div class="w-32 h-32 rounded-[3rem] bg-[#1c1f26] shadow-2xl border-2 border-slate-800 overflow-hidden group-active:scale-90 transition-all">
+            <button onclick="selectUser('nestor')" class="flex flex-col items-center gap-4 group">
+                <div class="w-32 h-32 rounded-[2.8rem] bg-[#1c1f26] border-2 border-slate-800 overflow-hidden active:scale-90 transition-all shadow-2xl">
                     <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
                 </div>
                 <span class="font-black uppercase tracking-widest text-slate-400 group-hover:text-white italic">Néstor</span>
@@ -32,133 +32,138 @@
     </div>
 
     <div id="app-content" class="hidden">
-        <header class="flex justify-between items-center p-8 sticky top-0 bg-[#0f1115]/80 backdrop-blur-xl z-40">
+        <header class="flex justify-between items-center p-8 sticky top-0 bg-[#0f1115]/90 backdrop-blur-xl z-40">
             <div class="flex items-center gap-4">
-                <img id="header-avatar" src="" class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-800" onclick="logout()">
+                <img id="header-avatar" src="" class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-800" onclick="switchTab('profile')">
                 <div>
                     <h1 class="font-black text-2xl italic tracking-tighter text-[#0047ff]">KINETIC</h1>
-                    <div class="flex items-center gap-1">
-                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                        <span id="user-display-name" class="text-[9px] font-black uppercase tracking-widest text-slate-500">--</span>
-                    </div>
+                    <span id="user-display-name" class="text-[9px] font-black uppercase tracking-widest text-slate-500">--</span>
                 </div>
             </div>
-            <button onclick="editProfileName()" class="text-slate-500 hover:text-white"><i class="ph ph-user-circle text-3xl"></i></button>
+            <button onclick="location.reload()" class="w-11 h-11 bg-[#1c1f26] rounded-xl flex items-center justify-center text-slate-500 border border-slate-800 shadow-sm">
+                <i class="ph ph-arrow-clockwise text-xl"></i>
+            </button>
         </header>
 
         <main class="px-8 max-w-md mx-auto">
             <section id="view-dashboard" class="view-section active">
-                <div class="mb-10">
+                <div class="mb-8">
                     <p class="text-[#ff5c00] font-black text-[10px] uppercase tracking-[0.4em] mb-1">Semana 0 • Fase Iniciación</p>
-                    <h2 class="text-6xl font-black tracking-tighter uppercase italic leading-[0.85]">PANEL</h2>
-                    <div class="mt-6 flex items-center gap-3 bg-[#1c1f26] inline-flex px-5 py-2.5 rounded-2xl border border-slate-800">
-                        <span class="text-slate-500 text-[10px] font-black uppercase tracking-widest border-r border-slate-700 pr-3">Racha</span>
+                    <h2 class="text-6xl font-black tracking-tighter uppercase italic leading-none">PANEL</h2>
+                    <div class="mt-5 flex items-center gap-3 bg-[#1c1f26] inline-flex px-4 py-2 rounded-xl border border-slate-800" onclick="editStat('streak')">
+                        <span class="text-slate-500 text-[9px] font-black uppercase tracking-widest border-r border-slate-700 pr-3">Racha</span>
                         <span id="dash-streak" class="text-white font-black italic">0 DÍAS</span>
-                        <i class="ph-fill ph-fire text-[#ff5c00] text-lg"></i>
-                        <i onclick="editStat('streak')" class="ph ph-pencil-simple pencil-btn ml-1"></i>
+                        <i class="ph-fill ph-fire text-[#ff5c00]"></i>
+                        <i class="ph ph-pencil-simple text-[#0047ff] text-xs"></i>
                     </div>
                 </div>
 
                 <div class="bg-[#1c1f26] rounded-[3rem] p-10 shadow-2xl mb-6 border border-slate-800 flex flex-col items-center">
-                    <div class="relative w-56 h-56 mb-10">
+                    <div class="relative w-52 h-52 mb-10">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                             <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#23272f" stroke-width="3"></path>
-                            <path id="dash-cal-svg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#0047ff" stroke-width="3" stroke-linecap="round"></path>
+                            <path id="dash-cal-svg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#0047ff" stroke-width="3" stroke-linecap="round" class="transition-all duration-1000"></path>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span id="dash-cal-percent" class="text-6xl font-black text-white tracking-tighter italic">0%</span>
-                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Status</span>
+                            <span id="dash-cal-percent" class="text-5xl font-black text-white tracking-tighter italic">0%</span>
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">Status</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 w-full gap-8 border-t border-slate-800 pt-8">
-                        <div onclick="editStat('calories')" class="cursor-pointer group text-center border-r border-slate-800">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 group-hover:text-[#0047ff]">Consumed <i class="ph-bold ph-pencil-simple ml-1"></i></p>
-                            <p id="dash-active-cals" class="text-4xl font-black text-[#0047ff] italic tracking-tighter">0</p>
+                        <div onclick="editStat('calories')" class="cursor-pointer text-center border-r border-slate-800 group">
+                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 group-hover:text-[#0047ff]">Consumed <i class="ph ph-pencil-simple ml-1"></i></p>
+                            <p id="dash-active-cals" class="text-3xl font-black text-[#0047ff] italic tracking-tighter">0</p>
                         </div>
                         <div class="text-center">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Remaining</p>
-                            <p id="dash-rem-cals" class="text-4xl font-black text-white tracking-tighter italic">--</p>
+                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Remaining</p>
+                            <p id="dash-rem-cals" class="text-3xl font-black text-white tracking-tighter italic">--</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-[#1c1f26] rounded-[3rem] p-10 shadow-2xl border border-slate-800" onclick="editStat('weight')">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Weight Control <i class="ph ph-pencil-simple pencil-btn"></i></p>
-                    <div class="flex justify-between items-baseline">
-                        <p class="text-6xl font-black tracking-tighter text-white italic"><span id="dash-current-weight">--</span> <span class="text-xl font-bold text-slate-600 not-italic">KG</span></p>
-                        <i class="ph ph-chart-line-up text-4xl text-slate-800"></i>
+                <div class="bg-[#1c1f26] rounded-[3rem] p-8 shadow-2xl border border-slate-800 flex justify-between items-center cursor-pointer" onclick="editStat('weight')">
+                    <div>
+                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Weight Control <i class="ph ph-pencil-simple text-[#0047ff] ml-1"></i></p>
+                        <p class="text-5xl font-black tracking-tighter text-white italic"><span id="dash-current-weight">--</span> <span class="text-sm font-bold text-slate-600 not-italic uppercase">KG</span></p>
                     </div>
+                    <i class="ph ph-trend-up text-4xl text-slate-800"></i>
                 </div>
             </section>
 
             <section id="view-workout" class="view-section">
-                <div class="flex justify-between items-end mb-10 pt-6">
-                    <h2 class="text-5xl font-black uppercase italic tracking-tighter">Entreno</h2>
-                    <button onclick="addGroup('workout')" class="bg-[#0047ff] text-white p-3 rounded-2xl shadow-lg"><i class="ph-bold ph-plus text-xl"></i></button>
+                <div class="flex justify-between items-end mb-8 pt-6">
+                    <h2 class="text-5xl font-black uppercase italic tracking-tighter leading-none">ENTRENO</h2>
+                    <button onclick="addWorkout()" class="w-12 h-12 bg-[#0047ff] text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform"><i class="ph-bold ph-plus text-xl"></i></button>
                 </div>
                 <div id="workout-groups-container" class="space-y-6"></div>
             </section>
 
+            <section id="view-group-detail" class="view-section">
+                <button onclick="switchTab('workout')" class="text-[#0047ff] font-black mb-8 italic flex items-center gap-2"><i class="ph-bold ph-arrow-left"></i> VOLVER</button>
+                <h2 id="detail-group-title" class="text-5xl font-black uppercase italic mb-8">--</h2>
+                <div id="detail-exercises-container" class="space-y-4 mb-32"></div>
+            </section>
+
             <section id="view-nutrition" class="view-section">
-                <h2 class="text-5xl font-black uppercase italic pt-6 mb-10 tracking-tighter">Dieta</h2>
-                <div class="bg-[#1c1f26] p-10 rounded-[3rem] shadow-2xl mb-8 border border-slate-800">
-                    <div class="flex justify-between items-center mb-10">
-                        <p class="text-5xl font-black tracking-tighter italic"><span id="nutrition-rem-kcal">--</span> <span class="text-sm text-slate-500 italic uppercase">REST</span></p>
-                        <button onclick="addMeal()" class="bg-[#0047ff] px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest">Añadir</button>
-                    </div>
+                <h2 class="text-5xl font-black uppercase italic pt-6 mb-8 tracking-tighter leading-none">DIETA</h2>
+                <div class="bg-[#1c1f26] p-10 rounded-[3rem] shadow-2xl mb-6 border border-slate-800">
+                    <p class="text-5xl font-black tracking-tighter mb-8 italic"><span id="nutrition-rem-kcal">--</span> <span class="text-sm text-slate-500 not-italic uppercase">kcal rest</span></p>
                     <div id="hydration-drops" class="flex justify-between mb-6 px-2"></div>
-                    <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden"><div id="hydration-bar" class="h-full gradient-blue transition-all duration-700"></div></div>
+                    <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden"><div id="hydration-bar" class="h-full bg-[#0047ff] transition-all duration-700"></div></div>
                 </div>
                 <div id="meals-container" class="space-y-4"></div>
+                <button onclick="addMeal()" class="w-full bg-[#1c1f26] text-white border border-slate-800 font-black py-5 rounded-[2rem] mt-6 shadow-xl uppercase tracking-widest text-xs">+ Añadir Comida</button>
             </section>
 
             <section id="view-shared" class="view-section">
-                <div class="flex justify-between items-center mb-12 pt-6">
+                <div class="flex justify-between items-center mb-10 pt-6">
                     <div class="flex items-center gap-4">
                         <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center bg-[#1c1f26] rounded-2xl border border-slate-800"><i class="ph-bold ph-caret-left"></i></button>
                         <h2 id="calendar-month-title" class="text-3xl font-black tracking-tighter italic uppercase text-center w-36 text-[#0047ff]">Abril</h2>
                         <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center bg-[#1c1f26] rounded-2xl border border-slate-800"><i class="ph-bold ph-caret-right"></i></button>
                     </div>
                 </div>
-
-                <div class="flex justify-center gap-3 mb-10 overflow-x-auto no-scrollbar">
-                    <button id="tool-you" onclick="setDuoTool('you')" class="bg-[#1c1f26] border border-slate-800 px-6 py-4 rounded-3xl text-[11px] font-black flex items-center gap-3 transition-all">
-                        <div class="w-3.5 h-3.5 rounded-full bg-[#0047ff] shadow-[0_0_10px_#0047ff]"></div> MI DÍA
+                <div class="flex justify-center gap-3 mb-8">
+                    <button id="tool-you" onclick="setDuoTool('you')" class="bg-[#1c1f26] border border-slate-800 px-6 py-4 rounded-3xl text-[10px] font-black flex items-center gap-3 transition-all">
+                        <div class="w-3.5 h-3.5 rounded-full bg-[#0047ff]"></div> MI DÍA
                     </button>
-                    <button id="tool-synced" onclick="setDuoTool('synced')" class="bg-[#1c1f26] border border-slate-800 px-6 py-4 rounded-3xl text-[11px] font-black flex items-center gap-3 transition-all">
+                    <button id="tool-synced" onclick="setDuoTool('synced')" class="bg-[#1c1f26] border border-slate-800 px-6 py-4 rounded-3xl text-[10px] font-black flex items-center gap-3 transition-all">
                         <div class="flex -space-x-1"><div class="w-3.5 h-3.5 rounded-full bg-[#0047ff]"></div><div class="w-3.5 h-3.5 rounded-full bg-[#8b4513]"></div></div> SYNC
                     </button>
                 </div>
-
-                <div id="calendar-grid" class="grid grid-cols-7 gap-3 text-center mb-12"></div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center mb-12"></div>
             </section>
 
             <section id="view-notes" class="view-section">
-                <div class="flex justify-between items-end mb-10 pt-6">
-                    <h2 class="text-5xl font-black tracking-tighter italic uppercase">Diario</h2>
-                    <button onclick="addNote()" class="bg-[#0047ff] p-3 rounded-2xl shadow-xl"><i class="ph-bold ph-plus text-xl"></i></button>
+                <div class="flex justify-between items-end mb-8 pt-6">
+                    <h2 class="text-5xl font-black italic uppercase tracking-tighter leading-none">DIARIO</h2>
+                    <button onclick="addNote()" class="w-12 h-12 bg-[#0047ff] text-white rounded-2xl flex items-center justify-center shadow-lg"><i class="ph-bold ph-plus text-xl"></i></button>
                 </div>
-                <div id="goals-container" class="bg-[#1c1f26] p-10 rounded-[3rem] mb-10 border border-slate-800"></div>
+                <div id="goals-container" class="bg-[#1c1f26] p-10 rounded-[3rem] mb-10 border border-slate-800 shadow-xl"></div>
                 <div id="notes-container" class="space-y-12"></div>
             </section>
         </main>
 
-        <nav class="fixed bottom-0 w-full bg-[#0f1115]/95 backdrop-blur-3xl border-t border-slate-800 flex justify-between items-center px-4 py-6 max-w-md mx-auto left-0 right-0 z-50">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item active flex-1 flex flex-col items-center gap-2">
-                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph-fill ph-squares-four text-3xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-[0.2em]">Panel</span>
+        <nav class="fixed bottom-0 w-full bg-[#0f1115]/95 backdrop-blur-3xl border-t border-slate-800 flex justify-between items-center px-4 py-5 max-w-md mx-auto left-0 right-0 z-50">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item active flex-1 flex flex-col items-center gap-1.5">
+                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph-fill ph-squares-four text-2xl"></i></div>
+                <span class="text-[8px] font-black uppercase tracking-widest">Panel</span>
             </button>
-            <button onclick="switchTab('workout')" id="tab-workout" class="nav-item flex-1 flex flex-col items-center gap-2">
-                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-barbell text-3xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-[0.2em]">Entreno</span>
+            <button onclick="switchTab('workout')" id="tab-workout" class="nav-item flex-1 flex flex-col items-center gap-1.5">
+                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-barbell text-2xl"></i></div>
+                <span class="text-[8px] font-black uppercase tracking-widest">Entreno</span>
             </button>
-            <button onclick="switchTab('shared')" id="tab-shared" class="nav-item flex-1 flex flex-col items-center gap-2">
-                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-users-three text-3xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-[0.2em]">Dúo</span>
+            <button onclick="switchTab('nutrition')" id="tab-nutrition" class="nav-item flex-1 flex flex-col items-center gap-1.5">
+                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-fork-knife text-2xl"></i></div>
+                <span class="text-[8px] font-black uppercase tracking-widest">Dieta</span>
             </button>
-            <button onclick="switchTab('notes')" id="tab-notes" class="nav-item flex-1 flex flex-col items-center gap-2">
-                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-journal-bookmark text-3xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-[0.2em]">Diario</span>
+            <button onclick="switchTab('shared')" id="tab-shared" class="nav-item flex-1 flex flex-col items-center gap-1.5">
+                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-users-three text-2xl"></i></div>
+                <span class="text-[8px] font-black uppercase tracking-widest">Dúo</span>
+            </button>
+            <button onclick="switchTab('notes')" id="tab-notes" class="nav-item flex-1 flex flex-col items-center gap-1.5">
+                <div class="icon-container w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-journal-bookmark text-2xl"></i></div>
+                <span class="text-[8px] font-black uppercase tracking-widest">Diario</span>
             </button>
         </nav>
     </div>
