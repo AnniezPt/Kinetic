@@ -1,4 +1,4 @@
-// 1. CONFIGURACIÓN FIREBASE (Tus claves reales)
+// CONFIGURACIÓN FIREBASE (Tus claves reales de Bélgica)
 const firebaseConfig = {
     apiKey: "AIzaSyAspSyjZo2yPxEdTj-i3S8w8q1V4kqwEe8",
     authDomain: "kinetic-6bfb2.firebaseapp.com",
@@ -13,47 +13,52 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 2. ESTADO INICIAL
+// ESTADO INICIAL
 let appState = {
-    profileName: "Marcus Sterling",
     dashboard: { myCalories: 0, partnerCalories: 0, myWeight: 80.0, partnerWeight: 80.0, dailyGoal: 1650 },
     shared: {
         myAvatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=100",
-        partnerAvatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=100",
+        partnerAvatar: "https://images.unsplash.com/photo-1570295999919-51ceb5ecca61?auto=format&fit=crop&q=80&w=100",
         calendar: {},
         viewYear: 2026,
         viewMonth: 3, // Abril
-        selectedDate: `2026-3-${new Date().getDate()}`,
+        selectedDate: `2026-3-20`,
         upcoming: []
-    },
-    currentTool: null
+    }
 };
 
-// 3. SINCRONIZACIÓN LIVE
-// Escucha cambios de la nube al instante
-db.ref('kinetic_shared_state').on('value', (snapshot) => {
+// ESCUCHA EN TIEMPO REAL
+db.ref('kinetic_v1').on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         appState = data;
         renderAll();
+        document.getElementById('sync-status').innerText = "Sincronizado";
+        document.getElementById('sync-status').classList.replace('text-slate-400', 'text-green-500');
     }
 });
 
 function sync() {
-    db.ref('kinetic_shared_state').set(appState);
+    db.ref('kinetic_v1').set(appState);
 }
 
-// 4. FUNCIONES DASHBOARD DOBLE
+// RENDERIZADO
+function renderAll() {
+    renderDashboard();
+    renderCalendar();
+    document.getElementById('header-avatar-img').src = appState.shared.myAvatar;
+    document.getElementById('duo-my-img').src = appState.shared.myAvatar;
+    document.getElementById('duo-partner-img').src = appState.shared.partnerAvatar;
+}
+
 function renderDashboard() {
     const d = appState.dashboard;
-    // Tú
     document.getElementById('dash-my-active-cals').innerText = d.myCalories;
     document.getElementById('dash-my-weight').innerText = d.myWeight.toFixed(1);
     const myP = Math.min(100, (d.myCalories / d.dailyGoal) * 100);
     document.getElementById('dash-my-cal-svg').setAttribute('stroke-dasharray', `${myP}, 100`);
     document.getElementById('dash-my-cal-text').innerText = Math.round(myP) + "%";
 
-    // Compañero
     document.getElementById('dash-partner-active-cals').innerText = d.partnerCalories;
     document.getElementById('dash-partner-weight').innerText = d.partnerWeight.toFixed(1);
     const partP = Math.min(100, (d.partnerCalories / d.dailyGoal) * 100);
@@ -69,14 +74,7 @@ function promptEditStat(type) {
     }
 }
 
-// 5. CALENDARIO PINCEL MÓVIL
-function changeMonth(dir) {
-    appState.shared.viewMonth += dir;
-    if(appState.shared.viewMonth > 11) { appState.shared.viewMonth = 0; appState.shared.viewYear++; }
-    if(appState.shared.viewMonth < 0) { appState.shared.viewMonth = 11; appState.shared.viewYear--; }
-    sync();
-}
-
+// CALENDARIO PINCEL
 function setDuoTool(tool) {
     appState.currentTool = (appState.currentTool === tool) ? null : tool;
     ['you', 'partner', 'synced'].forEach(t => {
@@ -90,44 +88,37 @@ function renderCalendar() {
     const cont = document.getElementById('calendar-grid');
     if(!cont) return;
     const { viewYear: y, viewMonth: m } = appState.shared;
-    const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    document.getElementById('calendar-month-title').innerText = `${months[m]} ${y}`;
+    const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    document.getElementById('calendar-month-title').innerText = `${names[m]} ${y}`;
     
     let html = '';
     const days = new Date(y, m + 1, 0).getDate();
     for(let i = 1; i <= days; i++) {
         const key = `${y}-${m}-${i}`;
         const status = appState.shared.calendar[key];
-        const isSel = appState.shared.selectedDate === key;
         let marker = '';
         if(status === 'you') marker = '<div class="w-2 h-2 bg-kin-blue rounded-full mx-auto mt-1"></div>';
         if(status === 'partner') marker = '<div class="w-2 h-2 bg-kin-brown rounded-full mx-auto mt-1"></div>';
         if(status === 'synced') marker = '<div class="flex justify-center gap-0.5 mt-1"><div class="w-1.5 h-1.5 bg-kin-blue rounded-full"></div><div class="w-1.5 h-1.5 bg-kin-brown rounded-full"></div></div>';
-
-        html += `<div onclick="clickDay(${i})" class="p-4 rounded-2xl bg-white shadow-sm cursor-pointer border-2 ${isSel ? 'border-kin-blue':'border-transparent'}">
-            <span class="text-xs font-black">${i}</span>${marker}</div>`;
+        html += `<div onclick="clickDay(${i})" class="p-4 rounded-2xl bg-white shadow-sm cursor-pointer border-2 border-transparent"><span class="text-xs font-black">${i}</span>${marker}</div>`;
     }
     cont.innerHTML = html;
 }
 
 function clickDay(day) {
     const key = `${appState.shared.viewYear}-${appState.shared.viewMonth}-${day}`;
-    appState.shared.selectedDate = key;
     if(appState.currentTool) {
         if(appState.shared.calendar[key] === appState.currentTool) delete appState.shared.calendar[key];
         else appState.shared.calendar[key] = appState.currentTool;
+        sync();
     }
-    sync();
 }
 
-// 6. GENERAL
-function renderAll() {
-    renderDashboard();
-    renderCalendar();
-    document.getElementById('header-avatar-img').src = appState.shared.myAvatar;
-    document.getElementById('duo-my-img').src = appState.shared.myAvatar;
-    document.getElementById('duo-partner-img').src = appState.shared.partnerAvatar;
-    document.getElementById('profile-avatar-img') && (document.getElementById('profile-avatar-img').src = appState.shared.myAvatar);
+function changeMonth(dir) {
+    appState.shared.viewMonth += dir;
+    if(appState.shared.viewMonth > 11) { appState.shared.viewMonth = 0; appState.shared.viewYear++; }
+    if(appState.shared.viewMonth < 0) { appState.shared.viewMonth = 11; appState.shared.viewYear--; }
+    sync();
 }
 
 function switchTab(id) {
@@ -135,7 +126,7 @@ function switchTab(id) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(`view-${id}`).classList.add('active');
     document.getElementById(`tab-${id}`).classList.add('active');
-    document.getElementById('global-header').style.display = (id === 'shared' || id === 'profile') ? 'none' : 'flex';
+    document.getElementById('global-header').style.display = (id === 'profile') ? 'none' : 'flex';
 }
 
 function changeAvatar(target) {
@@ -150,6 +141,10 @@ function changeAvatar(target) {
         r.readAsDataURL(e.target.files[0]);
     };
     up.click();
+}
+
+function requestOneSignalPush() {
+    OneSignalDeferred.push(function(OneSignal) { OneSignal.Slidedown.promptPush(); });
 }
 
 window.onload = () => { switchTab('dashboard'); };
