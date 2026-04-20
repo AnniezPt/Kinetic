@@ -1,4 +1,4 @@
-// FIREBASE CONFIG
+// CONFIGURACIÓN FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyAspSyjZo2yPxEdTj-i3S8w8q1V4kqwEe8",
     authDomain: "kinetic-6bfb2.firebaseapp.com",
@@ -14,40 +14,34 @@ const db = firebase.database();
 
 let currentUser = localStorage.getItem('kinetic_user') || null;
 
-// DATOS ORIGINALES RESTAURADOS
+// ESTADO GLOBAL COMPLETO
 let appData = {
     users: {
         ana: { calories: 0, weight: 62.4, streak: 0, hydration: 2, avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200" },
         nestor: { calories: 0, weight: 85.0, streak: 0, hydration: 3, avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=200" }
     },
     shared: {
-        calendar: {},
-        viewYear: 2026, viewMonth: 3, // Abril
-        goals: [{ title: "Deadlift 230kg", done: true }, { title: "Dominar Muscle Up", done: false }, { title: "Sentadilla 180kg", done: false }],
-        notes: [
-            { day: "20", monthYear: "ABR 2026", title: "Análisis de Fatiga", content: "Buenas sensaciones compartidas.", tags: ["Dúo"] }
-        ],
-        workouts: [
-            { title: "EMPUJE", exercises: [{ name: "Press Banca", sets: 4, reps: "10" }, { name: "Press Militar", sets: 3, reps: "12" }] },
-            { title: "TIRÓN", exercises: [{ name: "Dominadas", sets: 4, reps: "8" }, { name: "Remo Barra", sets: 4, reps: "10" }] },
-            { title: "PIERNAS", exercises: [{ name: "Sentadilla", sets: 4, reps: "8" }, { name: "Peso Muerto", sets: 4, reps: "10" }] }
-        ],
-        meals: [
-            { name: "Avena con whey", kcal: 450, type: "Desayuno" },
-            { name: "Pollo con Quinoa", kcal: 620, type: "Comida" }
-        ]
+        calendar: {}, viewYear: 2026, viewMonth: 3,
+        workouts: [{ title: "EMPUJE", exercises: [{ name: "Press Banca", weight: 80, sets: 4, reps: 10, rest: "90s" }] }],
+        mealsToday: [],
+        mealsHistory: [],
+        sessions: []
     }
 };
 
 // SYNC LIVE
-db.ref('kinetic_v2026_master').on('value', (snapshot) => {
-    const data = snapshot.val();
-    if (data) { appData = data; if (currentUser) renderAll(); }
+db.ref('kinetic_v2026_ultimate').on('value', (s) => {
+    const d = s.val();
+    if (d) { 
+        appData = d; 
+        if (currentUser) renderAll(); 
+        else renderSelection();
+    }
 });
 
-function sync() { db.ref('kinetic_v2026_master').set(appData); }
+function sync() { db.ref('kinetic_v2026_ultimate').set(appData); }
 
-// SELECCION PERFIL
+// LÓGICA PERFILES
 function selectUser(user) {
     currentUser = user;
     localStorage.setItem('kinetic_user', user);
@@ -56,17 +50,25 @@ function selectUser(user) {
     renderAll();
 }
 
+function renderSelection() {
+    document.getElementById('sel-img-ana').src = appData.users.ana.avatar;
+    document.getElementById('sel-img-nestor').src = appData.users.nestor.avatar;
+}
+
 function logout() { localStorage.removeItem('kinetic_user'); location.reload(); }
 
-// RENDER TOTAL
+// RENDERIZADO TOTAL
 function renderAll() {
     const user = appData.users[currentUser];
     const shared = appData.shared;
 
+    // Perfil & Header
     document.getElementById('header-avatar').src = user.avatar;
+    document.getElementById('profile-img-big').src = user.avatar;
     document.getElementById('user-display-name').innerText = currentUser.toUpperCase();
+    document.getElementById('profile-name-big').innerText = currentUser.toUpperCase();
 
-    // Dash
+    // Dashboard
     document.getElementById('dash-active-cals').innerText = user.calories;
     document.getElementById('dash-current-weight').innerText = user.weight.toFixed(1);
     document.getElementById('dash-streak').innerText = `${user.streak} DÍAS`;
@@ -76,115 +78,190 @@ function renderAll() {
     document.getElementById('dash-cal-svg').setAttribute('stroke-dasharray', `${p}, 100`);
     document.getElementById('dash-cal-percent').innerText = Math.round(p) + "%";
 
-    // Entreno
-    document.getElementById('workout-groups-container').innerHTML = shared.workouts.map((g, i) => `
-        <div class="bg-[#1c1f26] rounded-[2.5rem] p-10 border border-slate-800 shadow-2xl">
+    // Entrenos (Editor profundo)
+    document.getElementById('workout-container').innerHTML = shared.workouts.map((g, i) => `
+        <div class="bg-[#1c1f26] rounded-[2.8rem] p-10 border border-slate-800">
             <div class="flex justify-between items-center mb-8">
-                <div><h3 class="text-3xl font-black italic uppercase tracking-tighter text-white">${g.title}</h3><p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${g.exercises.length} EJERCICIOS</p></div>
-                <div class="flex gap-3">
-                    <button onclick="editWorkoutGroup(${i})" class="text-[#0047ff]"><i class="ph ph-pencil-simple text-2xl"></i></button>
-                    <button onclick="deleteWorkoutGroup(${i})" class="text-red-900/40"><i class="ph ph-trash text-2xl"></i></button>
+                <h3 class="text-3xl font-black italic uppercase italic tracking-tighter">${g.title}</h3>
+                <div class="flex gap-4">
+                    <button onclick="addExercise(${i})" class="text-[#0047ff]"><i class="ph ph-plus-circle text-2xl"></i></button>
+                    <button onclick="deleteBlock(${i})" class="text-slate-800"><i class="ph ph-trash text-2xl"></i></button>
                 </div>
             </div>
-            <div class="space-y-4">${g.exercises.map(ex => `<div class="bg-slate-900/40 p-5 rounded-2xl flex justify-between items-center"><span class="font-bold text-slate-400 italic">${ex.name}</span><span class="text-sm font-black text-[#0047ff]">${ex.sets}x${ex.reps}</span></div>`).join('')}</div>
+            <div class="space-y-4">${g.exercises.map((ex, j) => `
+                <div class="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/50">
+                    <div class="flex justify-between items-start mb-4">
+                        <p class="font-black italic uppercase text-slate-300 text-sm">${ex.name}</p>
+                        <button onclick="editExercise(${i}, ${j})" class="text-[#0047ff]"><i class="ph ph-pencil-simple"></i></button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-center">
+                        <div><p class="text-[7px] font-black text-slate-600 uppercase">Peso</p><p class="text-xs font-black">${ex.weight}kg</p></div>
+                        <div><p class="text-[7px] font-black text-slate-600 uppercase">Sets</p><p class="text-xs font-black">${ex.sets}</p></div>
+                        <div><p class="text-[7px] font-black text-slate-600 uppercase">Reps</p><p class="text-xs font-black">${ex.reps}</p></div>
+                        <div><p class="text-[7px] font-black text-slate-600 uppercase">Rest</p><p class="text-xs font-black">${ex.rest}</p></div>
+                    </div>
+                </div>`).join('')}</div>
         </div>`).join('');
 
-    // Dieta
-    document.getElementById('nutrition-rem-kcal').innerText = (2500 - user.calories);
-    const drops = document.getElementById('hydration-drops');
-    drops.innerHTML = [1,2,3,4,5].map((_, i) => `<i onclick="setHydration(${i+1})" class="ph-fill ph-drop text-3xl cursor-pointer ${i < user.hydration ? 'text-[#0047ff] shadow-[0_0_10px_#0047ff]':'text-slate-800'}"></i>`).join('');
-    document.getElementById('hydration-bar').style.width = (user.hydration / 5) * 100 + "%";
-    document.getElementById('meals-container').innerHTML = shared.meals.map((m, i) => `<div class="bg-[#1c1f26] rounded-[2rem] p-6 border border-slate-800 flex justify-between items-center"><div><h4 class="font-black text-[9px] text-slate-500 uppercase tracking-widest">${m.type}</h4><p class="font-bold text-slate-300 italic">${m.name}</p></div><div class="flex items-center gap-4"><span class="font-black text-[#0047ff]">${m.kcal} Kcal</span><button onclick="deleteMeal(${i})" class="text-slate-700"><i class="ph ph-x text-lg"></i></button></div></div>`).join('');
+    // Dieta (Macros y Fotos)
+    let sumKcal = 0, sumPro = 0, sumFat = 0;
+    document.getElementById('today-meals').innerHTML = shared.mealsToday.map(m => {
+        sumKcal += parseInt(m.kcal); sumPro += parseInt(m.pro); sumFat += parseInt(m.fat);
+        return `
+        <div class="bg-[#1c1f26] rounded-3xl p-6 border border-slate-800 flex items-center gap-6">
+            <img src="${m.img || 'https://via.placeholder.com/100'}" class="w-16 h-16 rounded-2xl object-cover">
+            <div class="flex-1">
+                <p class="font-black text-slate-300 italic mb-1 uppercase text-sm">${m.name}</p>
+                <p class="text-[9px] font-black text-[#0047ff] uppercase">${m.kcal} kcal • ${m.pro}g P • ${m.fat}g G</p>
+            </div>
+        </div>`;
+    }).join('');
+    document.getElementById('nut-total-kcal').innerText = sumKcal;
+    document.getElementById('nut-total-pro').innerText = sumPro;
+    document.getElementById('nut-total-fat').innerText = sumFat;
 
-    // Diario
-    document.getElementById('goals-container').innerHTML = `<h4 class="font-black text-[11px] uppercase text-slate-500 mb-8 tracking-widest italic border-b border-slate-800 pb-3">Shared Goals</h4>` + shared.goals.map((g, i) => `<div onclick="toggleGoal(${i})" class="flex items-center gap-5 mb-5 cursor-pointer group"><div class="w-7 h-7 rounded-xl border-2 flex items-center justify-center ${g.done ? 'bg-[#0047ff] border-[#0047ff] shadow-[0_0_10px_#0047ff]' : 'border-slate-800'}">${g.done ? '<i class="ph-bold ph-check text-xs text-white"></i>' : ''}</div><span class="font-black text-sm ${g.done ? 'line-through text-slate-700' : 'text-slate-300'}">${g.title}</span></div>`).join('');
-    document.getElementById('notes-container').innerHTML = shared.notes.map(n => `<div class="bg-[#1c1f26] p-10 rounded-[3rem] border border-slate-800 shadow-2xl"><p class="text-[#0047ff] font-black text-5xl mb-2 italic tracking-tighter">${n.day}</p><p class="text-[10px] font-black text-slate-500 uppercase mb-5 tracking-widest">${n.monthYear}</p><h4 class="font-black text-2xl mb-4 text-slate-200">${n.title}</h4><p class="text-slate-500 text-sm leading-relaxed">${n.content}</p></div>`).join('');
+    // Hidratación
+    const drops = document.getElementById('hydration-drops');
+    drops.innerHTML = [1,2,3,4,5].map((_, i) => `<i onclick="setHydration(${i+1})" class="ph-fill ph-drop text-3xl cursor-pointer ${i < user.hydration ? 'text-[#0047ff]':'text-slate-800'}"></i>`).join('');
+    document.getElementById('hydration-bar').style.width = (user.hydration / 5) * 100 + "%";
+
+    // Historial Dieta
+    document.getElementById('history-meals').innerHTML = shared.mealsHistory.map(h => `
+        <div class="bg-slate-900/30 p-6 rounded-3xl border border-slate-800/30">
+            <p class="text-[9px] font-black text-slate-600 uppercase mb-2">${h.date}</p>
+            <p class="font-bold text-slate-400 italic">${h.summary}</p>
+        </div>`).join('');
+
+    // Dúo y Sesiones
+    document.getElementById('sessions-container').innerHTML = shared.sessions.map(s => `
+        <div class="bg-[#1c1f26] p-6 rounded-3xl border border-slate-800 flex justify-between items-center">
+            <div><p class="text-[9px] font-black text-slate-500 uppercase">${s.date}</p><p class="font-black italic">${s.start} - ${s.end}</p></div>
+            <i class="ph ph-calendar-check text-2xl text-[#0047ff]"></i>
+        </div>`).join('');
 
     renderCalendar();
 }
 
 // EDITORES (LÁPICES)
 function editStat(type) {
-    const val = prompt(`Actualizar ${type}:`, appData.users[currentUser][type]);
-    if(val !== null) {
+    let val = prompt(`Actualizar ${type}:`, appData.users[currentUser][type]);
+    if (val !== null) {
         appData.users[currentUser][type] = (type === 'streak' || type === 'calories') ? parseInt(val) : parseFloat(val);
         sync();
     }
 }
-function setHydration(v) { appData.users[currentUser].hydration = v; sync(); }
-function toggleGoal(i) { appData.shared.goals[i].done = !appData.shared.goals[i].done; sync(); }
 
-// CALENDARIO DYNAMIC
+// DIETA (Guardado Pro)
+function saveMeal() {
+    const meal = {
+        name: document.getElementById('m-name').value,
+        kcal: document.getElementById('m-kcal').value || 0,
+        pro: document.getElementById('m-pro').value || 0,
+        fat: document.getElementById('m-fat').value || 0,
+        img: tempMealImg || ''
+    };
+    appData.shared.mealsToday.push(meal);
+    appData.users[currentUser].calories += parseInt(meal.kcal);
+    sync();
+    closeModal('modal-meal');
+}
+
+// CAMBIO FOTO PERFIL
+document.getElementById('img-upload').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        appData.users[currentUser].avatar = ev.target.result;
+        sync();
+    };
+    reader.readAsDataURL(e.target.files[0]);
+};
+
+// FOTO COMIDA TEMP
+let tempMealImg = '';
+document.getElementById('m-img').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => { tempMealImg = ev.target.result; };
+    reader.readAsDataURL(e.target.files[0]);
+};
+
+// CALENDARIO PULIDO
 let currentTool = null;
-function setDuoTool(tool) {
-    currentTool = (currentTool === tool) ? null : tool;
-    ['you', 'synced'].forEach(t => { 
-        document.getElementById(`tool-${t}`).style.borderColor = (currentTool === t) ? '#0047ff' : '#1e293b';
-        document.getElementById(`tool-${t}`).style.background = (currentTool === t) ? 'rgba(0, 71, 255, 0.1)' : '#1c1f26';
+function setTool(t) {
+    currentTool = (currentTool === t) ? null : t;
+    ['you', 'sync'].forEach(id => {
+        document.getElementById(`tool-${id}`).style.borderColor = (currentTool === id) ? '#0047ff' : 'transparent';
     });
 }
+
 function renderCalendar() {
     const cont = document.getElementById('calendar-grid');
     const { viewYear: y, viewMonth: m } = appData.shared;
     const today = new Date();
     const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    document.getElementById('calendar-month-title').innerText = names[m];
-    let html = ['L','M','X','J','V','S','D'].map(d => `<div class="text-[10px] font-black text-slate-700 uppercase mb-2">${d}</div>`).join('');
-    const first = new Date(y, m, 1).getDay();
-    const padding = first === 0 ? 6 : first - 1;
+    document.getElementById('cal-title').innerText = names[m];
+    
+    let html = '';
     const days = new Date(y, m + 1, 0).getDate();
-    for(let i=0; i<padding; i++) html += `<div></div>`;
     for(let i = 1; i <= days; i++) {
         const key = `${y}-${m}-${i}`;
         const status = appData.shared.calendar[key];
         const isToday = today.getDate() === i && today.getMonth() === m && today.getFullYear() === y;
         let mark = '';
-        if(status === 'ana') mark = '<div class="w-2 h-2 bg-[#0047ff] rounded-full mx-auto mt-1 shadow-[0_0_5px_#0047ff]"></div>';
-        if(status === 'nestor') mark = '<div class="w-2 h-2 bg-[#8b4513] rounded-full mx-auto mt-1"></div>';
-        if(status === 'synced') mark = '<div class="flex justify-center gap-0.5 mt-1"><div class="w-1.5 h-1.5 bg-[#0047ff] rounded-full"></div><div class="w-1.5 h-1.5 bg-[#8b4513] rounded-full"></div></div>';
-        html += `<div onclick="clickDay(${i})" class="calendar-day p-4 cursor-pointer border-2 active:scale-90 transition-all ${isToday ? 'today' : 'border-transparent'}"><span class="text-xs font-black text-slate-500">${i}</span>${mark}</div>`;
+        if(status === 'ana') mark = '<div class="w-2.5 h-2.5 bg-[#0047ff] rounded-full mx-auto mt-1 shadow-[0_0_8px_#0047ff]"></div>';
+        if(status === 'nestor') mark = '<div class="w-2.5 h-2.5 bg-[#8b4513] rounded-full mx-auto mt-1"></div>';
+        if(status === 'sync') mark = '<div class="flex justify-center gap-0.5 mt-1"><div class="w-1.5 h-1.5 bg-[#0047ff] rounded-full"></div><div class="w-1.5 h-1.5 bg-[#8b4513] rounded-full"></div></div>';
+        html += `<div onclick="clickDay(${i})" class="calendar-day p-4 cursor-pointer border-2 transition-all active:scale-90 ${isToday ? 'today' : 'border-transparent'}"><span class="text-xs font-black text-slate-500">${i}</span>${mark}</div>`;
     }
     cont.innerHTML = html;
 }
+
 function clickDay(day) {
     const key = `${appData.shared.viewYear}-${appData.shared.viewMonth}-${day}`;
-    if(currentTool) {
-        appData.shared.calendar[key] = (currentTool === 'you') ? currentUser : 'synced';
+    if (currentTool) {
+        appData.shared.calendar[key] = (currentTool === 'you') ? currentUser : 'sync';
         sync();
     }
 }
-function changeMonth(dir) {
-    appData.shared.viewMonth += dir;
-    if(appData.shared.viewMonth > 11) { appData.shared.viewMonth = 0; appData.shared.viewYear++; }
-    if(appData.shared.viewMonth < 0) { appData.shared.viewMonth = 11; appData.shared.viewYear--; }
+
+// SESIONES
+function saveSession() {
+    appData.shared.sessions.push({
+        date: document.getElementById('s-date').value,
+        start: document.getElementById('s-start').value,
+        end: document.getElementById('s-end').value
+    });
     sync();
+    closeModal('modal-session');
 }
 
-// FUNCIONES AÑADIR (BOTONES +)
-function addWorkoutGroup() {
-    const title = prompt("Nombre de la nueva rutina (ej: FULL BODY):");
-    if(title) { appData.shared.workouts.push({ title: title.toUpperCase(), exercises: [] }); sync(); }
-}
-function addMeal() {
-    const name = prompt("¿Qué has comido?");
-    const kcal = prompt("Kcal:");
-    if(name && kcal) { 
-        appData.shared.meals.push({ name, kcal: parseInt(kcal), type: "EXTRA" });
-        appData.users[currentUser].calories += parseInt(kcal);
-        sync(); 
-    }
-}
-function addNote() {
-    const t = prompt("Título de la nota:");
-    const c = prompt("Contenido:");
-    if(t && c) { appData.shared.notes.unshift({ day: new Date().getDate(), monthYear: "ABR 2026", title: t, content: c }); sync(); }
-}
-
+// NAVEGACIÓN Y UTILS
 function switchTab(id) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(`view-${id}`).classList.add('active');
     document.getElementById(`tab-${id}`).classList.add('active');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function closeOnOverlay(e) { if(e.target.classList.contains('modal')) e.target.classList.remove('active'); }
+function changeMonth(dir) { appData.shared.viewMonth += dir; if(appData.shared.viewMonth > 11){ appData.shared.viewMonth=0; appData.shared.viewYear++; } sync(); }
+
+// EJERCICIOS
+function addExercise(blockIdx) {
+    const name = prompt("Nombre ejercicio:");
+    if(name) {
+        appData.shared.workouts[blockIdx].exercises.push({ name, weight: 0, sets: 0, reps: 0, rest: "60s" });
+        sync();
+    }
+}
+function editExercise(b, e) {
+    const ex = appData.shared.workouts[b].exercises[e];
+    ex.weight = prompt("Peso (kg):", ex.weight);
+    ex.sets = prompt("Series:", ex.sets);
+    ex.reps = prompt("Repeticiones:", ex.reps);
+    ex.rest = prompt("Descanso:", ex.rest);
+    sync();
 }
 
 window.onload = () => { if(currentUser) selectUser(currentUser); };
