@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINETIC | App de Rendimiento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'kin-blue': '#0047ff',
+                        'kin-bg': '#f4f5f9',
+                        'kin-dark': '#1e2024',
+                        'kin-orange': '#b5531d',
+                        'kin-brown': '#8b4513'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="text-kin-dark pb-28">
+    <header id="global-header" class="flex justify-between items-center p-6 sticky top-0 bg-kin-bg z-40 transition-all duration-300">
+        <div class="flex items-center gap-3">
+            <img id="header-avatar-img" src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=100" alt="Perfil" class="w-10 h-10 rounded-xl object-cover shadow-sm border border-slate-200">
+            <div class="flex flex-col justify-center">
+                <h1 class="font-black tracking-tighter text-2xl text-kin-blue uppercase leading-none">KINETIC</h1>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 mt-1">Memento mori</span>
+            </div>
+        </div>
+        <button class="text-slate-400 hover:text-slate-600 relative">
+            <i class="ph-fill ph-bell text-2xl"></i>
+            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-kin-bg"></span>
+        </button>
+    </header>
+
+    <main class="px-6 max-w-md mx-auto">
+        <section id="view-dashboard" class="view-section active">
+            <div class="mb-6">
+                <p class="text-kin-orange font-bold text-[10px] uppercase tracking-widest mb-1">Semana 12</p>
+                <div class="flex items-end gap-2 mb-4">
+                    <h2 class="text-5xl font-black tracking-tighter leading-none uppercase">Acondiciona-<br>miento</h2>
+                </div>
+                <div class="flex items-center gap-2 text-sm font-bold bg-slate-200/60 inline-flex px-3 py-1.5 rounded-lg">
+                    <span class="text-slate-500 text-xs uppercase tracking-wider">Constancia</span>
+                    <span class="text-kin-dark">RACHA DE 14 DÍAS</span>
+                    <i class="ph-fill ph-fire text-kin-orange"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-4 border border-slate-100 flex flex-col items-center relative">
+                <div class="relative w-36 h-36 mb-8 mt-6">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                        <path stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="3"></path>
+                        <path id="dash-cal-svg" stroke-dasharray="75, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#0047ff" stroke-width="3" stroke-linecap="round" class="transition-all duration-1000"></path>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="dash-cal-percent" class="text-3xl font-black text-slate-800 tracking-tighter">75%</span>
+                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Activo</span>
+                    </div>
+                </div>
+                <div class="flex justify-between w-full mb-6 px-2">
+                    <div>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Calorías Activas <i class="ph-bold ph-pencil-simple cursor-pointer hover:text-kin-blue" onclick="promptEditStat('calories')"></i></p>
+                        <p id="dash-active-cals" class="text-3xl font-black text-kin-blue italic tracking-tighter cursor-pointer hover:opacity-80" onclick="promptEditStat('calories')">1,240</p>
+                        <p class="text-[9px] font-medium text-slate-500 mt-1">kcal quemadas</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Restantes</p>
+                        <p id="dash-rem-cals" class="text-3xl font-black text-slate-800 tracking-tighter">410</p>
+                        <p class="text-[9px] font-medium text-slate-500 mt-1">para meta diaria</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-4 border border-slate-100">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Peso Actual <i class="ph-bold ph-pencil-simple cursor-pointer hover:text-kin-blue" onclick="promptEditStat('weight')"></i></p>
+                        <div class="flex items-baseline gap-1 cursor-pointer hover:opacity-80" onclick="promptEditStat('weight')">
+                            <span id="dash-current-weight" class="text-5xl font-black tracking-tighter text-slate-800">85.4</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase">KG</span>
+                        </div>
+                    </div>
+                    <span class="bg-blue-50 text-kin-blue text-[10px] font-bold px-2 py-1 rounded-md">-1.2%</span>
+                </div>
+                <div class="h-16 w-full relative mb-2">
+                    <svg viewBox="0 0 100 30" class="w-full h-full preserve-3d" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="blueGradient" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0%" stop-color="#0047ff" stop-opacity="0.2"/>
+                                <stop offset="100%" stop-color="#0047ff" stop-opacity="0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,25 C20,22 30,26 50,20 C70,14 85,24 100,5 L100,30 L0,30 Z" fill="url(#blueGradient)"/>
+                        <path d="M0,25 C20,22 30,26 50,20 C70,14 85,24 100,5" fill="none" stroke="#0047ff" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="flex justify-between text-[8px] font-bold text-slate-300 uppercase tracking-widest">
+                    <span>Lun</span>
+                    <span>Hoy</span>
+                </div>
+            </div>
+
+            <div class="bg-kin-dark rounded-[2rem] p-6 shadow-lg mb-8 text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 16px 16px;"></div>
+                <div class="relative z-10">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 tracking-[0.2em]">Intensidad Mensual</p>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span id="dash-total-volume" class="text-7xl font-black tracking-tighter italic">152</span>
+                        <span class="text-sm font-black text-kin-blue italic uppercase tracking-wider">Ton</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-medium mb-8 uppercase tracking-widest">Volumen total desplazado</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-[#2a2b30] p-4 rounded-xl border border-slate-700/50">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Prom / Sesión</p>
+                            <p class="text-xl font-black"><span id="dash-avg-session">8,400</span> <span class="text-[10px] text-slate-400">KG</span></p>
+                        </div>
+                        <div class="bg-[#2a2b30] p-4 rounded-xl border border-slate-700/50">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Serie Pico</p>
+                            <p class="text-xl font-black"><span id="dash-peak-set">185</span> <span class="text-[10px] text-slate-400">KG</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-workout" class="view-section">
+            <p class="text-kin-blue font-bold text-[10px] uppercase tracking-widest mb-1">Arquitectura de Rendimiento</p>
+            <h2 class="text-4xl font-black tracking-tighter leading-none uppercase mb-4">GRUPOS DE<br>ENTRENO</h2>
+            <button onclick="alert('Funcionalidad de crear grupo en desarrollo')" class="w-full bg-kin-blue text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-blue-500/30 flex justify-center items-center gap-2 mb-8 active:scale-95 transition-all">
+                <i class="ph-bold ph-plus-circle text-lg"></i> CREAR NUEVO GRUPO
+            </button>
+            <div onclick="openGroupDetail('push')" class="bg-white rounded-3xl p-5 shadow-sm mb-4 cursor-pointer active:scale-[0.98] transition-transform border border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 text-kin-blue rounded-xl flex items-center justify-center text-xl">
+                            <i class="ph-fill ph-lightning"></i>
+                        </div>
+                        <h3 class="text-2xl font-black uppercase tracking-tight">EMPUJE</h3>
+                    </div>
+                    <i class="ph-fill ph-barbell text-slate-200 text-3xl"></i>
+                </div>
+                <div class="flex gap-2 mt-4">
+                    <span class="bg-slate-100 text-slate-500 text-[9px] font-bold px-3 py-1.5 rounded-full uppercase">3 Ejercicios</span>
+                    <span class="bg-slate-100 text-slate-500 text-[9px] font-bold px-3 py-1.5 rounded-full uppercase">45 Min Est</span>
+                </div>
+            </div>
+            <div onclick="openGroupDetail('pull')" class="bg-[#facbaf] rounded-3xl p-5 shadow-sm mb-4 cursor-pointer active:scale-[0.98] transition-transform">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-[#e3b092] text-kin-brown rounded-xl flex items-center justify-center text-xl">
+                        <i class="ph-bold ph-list"></i>
+                    </div>
+                    <h3 class="text-2xl font-black uppercase tracking-tight text-kin-brown">TIRÓN</h3>
+                </div>
+                <button class="w-full bg-white text-kin-dark font-black text-xs py-3 rounded-xl uppercase tracking-widest mt-6">
+                    Gestionar Grupo
+                </button>
+            </div>
+            <div onclick="openGroupDetail('legs')" class="bg-[#1c1d21] rounded-3xl overflow-hidden shadow-sm mb-4 cursor-pointer active:scale-[0.98] transition-transform relative">
+                <div class="absolute inset-0 opacity-40">
+                    <img src="https://images.unsplash.com/photo-1434596922112-19c563067271?q=80&w=1470&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#1c1d21] via-[#1c1d21]/80 to-transparent"></div>
+                <div class="p-5 relative z-10">
+                    <div class="flex items-center gap-3 mb-8">
+                        <i class="ph-fill ph-person-simple-ski text-kin-orange text-2xl"></i>
+                        <h3 class="text-2xl font-black uppercase tracking-tight text-white">PIERNAS</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="bg-white/10 text-white text-[9px] font-bold px-3 py-1.5 rounded-full uppercase">3 Ejercicios</span>
+                        <span class="bg-white/10 text-white text-[9px] font-bold px-3 py-1.5 rounded-full uppercase">60 Min Est</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-group-detail" class="view-section">
+            <div class="flex justify-between items-center mb-6 pt-2">
+                <button onclick="switchTab('workout')" class="text-kin-blue flex items-center gap-2 font-bold hover:opacity-80 transition-opacity">
+                    <i class="ph-bold ph-arrow-left text-xl"></i> Volver a Grupos
+                </button>
+            </div>
+            <p class="text-kin-blue font-bold text-[10px] uppercase tracking-widest mb-1">Gestión de Rutina</p>
+            <h2 id="detail-group-title" class="text-4xl font-black tracking-tighter leading-none uppercase mb-6">EMPUJE</h2>
+            <div id="detail-exercises-container" class="space-y-4 mb-28"></div>
+            <div class="fixed bottom-[88px] left-0 right-0 px-6 max-w-md mx-auto z-30">
+                <button onclick="startActiveWorkout()" class="w-full bg-kin-blue text-white font-bold text-lg py-4 rounded-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] uppercase tracking-wider active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    INICIAR ENTRENAMIENTO <i class="ph-bold ph-play"></i>
+                </button>
+            </div>
+        </section>
+
+        <section id="view-workout-active" class="view-section">
+            <div class="mb-4 flex justify-between items-end">
+                <div>
+                    <button onclick="switchTab('workout')" class="text-slate-400 mb-2 flex items-center gap-1 text-xs font-bold uppercase tracking-widest hover:text-kin-blue transition-colors">
+                        <i class="ph-bold ph-arrow-left"></i> Volver a Grupos
+                    </button>
+                    <p class="text-kin-blue font-bold text-[10px] uppercase tracking-widest mb-1">Ejercicio Actual</p>
+                    <h2 class="text-4xl font-black tracking-tighter leading-none uppercase max-w-[200px]">EJERCICIO ACTIVO</h2>
+                </div>
+                <span id="workout-progress-text" class="text-xs font-bold text-slate-400 mb-1">0 / 3 COMPLETADAS</span>
+            </div>
+            <div class="rounded-3xl overflow-hidden relative h-48 mb-6 shadow-sm">
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            </div>
+            <div class="mb-6">
+                <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest mb-2">
+                    <span class="text-slate-500">Impulso de Sesión</span>
+                    <span id="momentum-text" class="text-kin-blue">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                    <div id="momentum-bar" class="bg-kin-blue h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-2 text-center">
+                <div class="text-left">Serie</div>
+                <div>Peso (kg)</div>
+                <div>Reps</div>
+                <div class="text-right pr-4">Hecho</div>
+            </div>
+            <div id="sets-container" class="space-y-3 mb-24"></div>
+            <div class="fixed bottom-[88px] left-0 right-0 px-6 max-w-md mx-auto z-30">
+                <div class="bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.08)] rounded-3xl p-4 flex items-center justify-between border border-slate-100">
+                    <div>
+                        <p class="text-kin-orange text-[10px] font-bold uppercase tracking-widest mb-1">Descanso</p>
+                        <div class="flex items-baseline gap-1">
+                            <span id="timer-display" class="text-3xl font-black tracking-tighter w-[80px]">01:14</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Restante</span>
+                        </div>
+                    </div>
+                    <button onclick="resetTimer()" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 mr-2 active:scale-90 transition-transform">
+                        <i class="ph-bold ph-arrows-clockwise text-xl"></i>
+                    </button>
+                    <button onclick="finishSession()" class="bg-kin-blue text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-500/30 whitespace-nowrap active:scale-95 transition-transform">
+                        FINALIZAR<br>SESIÓN
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-history" class="view-section">
+            <p class="text-kin-blue font-bold text-[10px] uppercase tracking-widest mb-1">Registros de Rendimiento</p>
+            <h2 class="text-4xl font-black tracking-tighter leading-none mb-6">Historial</h2>
+            <div class="bg-white rounded-3xl p-6 shadow-sm mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="bg-orange-100 text-kin-orange text-[10px] font-bold px-3 py-1 rounded-full uppercase">Última Sesión</span>
+                    <span class="text-xs font-bold text-slate-400">24 de Octubre, 2023</span>
+                </div>
+                <h3 class="text-2xl font-black leading-tight mb-1">Enfoque en<br>Cadena Posterior</h3>
+                <p class="text-sm font-semibold text-slate-500 mb-4">Glúteos, Isquiotibiales y Espalda Baja</p>
+                <div class="flex items-end gap-1 mb-2">
+                    <span class="text-4xl font-black tracking-tighter text-kin-blue">72</span>
+                    <span class="text-sm font-bold text-kin-blue mb-1 uppercase">Min</span>
+                </div>
+                <div class="flex items-center gap-1 text-xs font-bold text-slate-600">
+                    <i class="ph-fill ph-fire text-kin-orange text-sm"></i> 640 kcal
+                </div>
+            </div>
+            <div class="flex items-center gap-4 mb-4 mt-8">
+                <h3 class="text-2xl font-black">Historial Dúo</h3>
+                <div class="h-[2px] flex-1 bg-slate-200"></div>
+            </div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Sesiones conjuntas completadas</p>
+            <div id="past-duos-container" class="space-y-3 mb-8"></div>
+        </section>
+
+        <section id="view-notes" class="view-section">
+            <p class="text-kin-blue font-bold text-[10px] uppercase tracking-widest mb-1">Archivos de Rendimiento</p>
+            <div class="flex justify-between items-start mb-8">
+                <h2 class="text-4xl font-black tracking-tighter leading-none">Diario</h2>
+                <div class="text-right">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Racha Activa</p>
+                    <p class="text-2xl font-black text-kin-brown italic tracking-tighter">14 DÍAS</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-6 shadow-sm mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-black flex items-center gap-2"><i class="ph-bold ph-target text-kin-blue"></i> Metas Actuales</h4>
+                    <span class="text-[10px] font-bold text-kin-blue uppercase">Editar</span>
+                </div>
+                <div id="goals-container"></div>
+            </div>
+            <div class="border-b-2 border-kin-blue inline-block mb-6 mt-4">
+                <h3 class="text-sm font-black uppercase tracking-widest text-slate-800 pb-1">Información Reciente</h3>
+            </div>
+            <div id="notes-container" class="space-y-4 mb-24"></div>
+            <button class="fixed bottom-24 right-6 w-14 h-14 bg-kin-blue rounded-xl text-white flex items-center justify-center text-3xl shadow-[0_8px_20px_rgba(0,71,255,0.4)] active:scale-90 transition-transform z-30" onclick="openNoteModal()">
+                <i class="ph-bold ph-plus"></i>
+            </button>
+        </section>
+
+        <section id="view-nutrition" class="view-section">
+            <p class="text-kin-blue font-bold text-[10px] uppercase tracking-widest mb-1">Nutrición Deportiva</p>
+            <h2 class="text-4xl font-black tracking-tighter leading-none mb-6 uppercase">Combustible</h2>
+            <div class="bg-white inline-block px-5 py-3 rounded-2xl shadow-sm mb-6 border border-slate-100">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Restantes</p>
+                <div class="flex items-baseline gap-1">
+                    <span id="nutrition-rem-kcal" class="text-2xl font-black tracking-tighter text-kin-dark">842</span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">KCAL</span>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-6 shadow-sm mb-4 relative">
+                <i class="ph-fill ph-drop absolute right-6 top-6 text-2xl text-kin-blue"></i>
+                <h4 class="font-black text-lg mb-1 uppercase tracking-tight">Hidratación</h4>
+                <p class="text-xs text-slate-500 font-medium mb-4">Objetivo diario: 3.5L</p>
+                <div id="hydration-container" class="flex gap-2 mb-4"></div>
+                <div class="flex justify-between text-[9px] font-bold uppercase mb-2">
+                    <span class="text-kin-dark">Progreso</span>
+                    <span id="hydration-text" class="text-slate-400">0.0L / 3.5L</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5">
+                    <div id="hydration-bar" class="bg-kin-blue h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-6 shadow-sm mb-6">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="font-black text-lg uppercase tracking-tight w-24 leading-tight">Rendimiento Macros</h4>
+                </div>
+                <div class="mb-5">
+                    <div class="flex items-baseline gap-1 mb-2 relative">
+                        <span id="macro-p-consumed" class="text-3xl font-black tracking-tighter transition-all">0</span>
+                        <span class="text-xs font-bold text-slate-400">G</span>
+                        <span class="absolute right-0 bottom-1 text-[9px] font-bold text-kin-blue uppercase">Proteína</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mb-1">
+                        <div id="macro-p-bar" class="bg-kin-blue h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase">Objetivo: 180G</p>
+                </div>
+                <div class="mb-5">
+                    <div class="flex items-baseline gap-1 mb-2 relative">
+                        <span id="macro-c-consumed" class="text-3xl font-black tracking-tighter transition-all">0</span>
+                        <span class="text-xs font-bold text-slate-400">G</span>
+                        <span class="absolute right-0 bottom-1 text-[9px] font-bold text-kin-brown uppercase">Carbos</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mb-1">
+                        <div id="macro-c-bar" class="bg-kin-brown h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase">Objetivo: 230G</p>
+                </div>
+                <div>
+                    <div class="flex items-baseline gap-1 mb-2 relative">
+                        <span id="macro-f-consumed" class="text-3xl font-black tracking-tighter transition-all">0</span>
+                        <span class="text-xs font-bold text-slate-400">G</span>
+                        <span class="absolute right-0 bottom-1 text-[9px] font-bold text-kin-dark uppercase">Grasas</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mb-1">
+                        <div id="macro-f-bar" class="bg-kin-dark h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase">Objetivo: 85G</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-black uppercase tracking-tight">Ingesta Diaria</h3>
+                <button onclick="openMealModal()" class="bg-kin-blue text-white text-[9px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 uppercase shadow-sm shadow-blue-500/20 active:scale-95 transition-transform">
+                    <i class="ph-bold ph-plus"></i> Añadir
+                </button>
+            </div>
+            <div id="meals-container" class="space-y-4 mb-8"></div>
+        </section>
+
+        <section id="view-shared" class="view-section">
+            <div class="flex justify-between items-center mb-6 pt-2">
+                <button onclick="switchTab('dashboard')" class="text-kin-blue flex items-center gap-2 font-bold hover:opacity-80 transition-opacity">
+                    <i class="ph-bold ph-arrow-left text-xl"></i> Entreno Compartido
+                </button>
+                <div class="flex items-center relative">
+                    <img id="my-avatar-img" onclick="changeAvatar('my')" src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=100" class="w-8 h-8 rounded-full border-2 border-kin-bg object-cover shadow-sm cursor-pointer hover:opacity-80">
+                    <img id="partner-avatar-img" onclick="changeAvatar('partner')" src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=100" class="w-8 h-8 rounded-full border-2 border-kin-bg -ml-3 object-cover shadow-sm cursor-pointer hover:opacity-80">
+                </div>
+            </div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Sincronización de Horarios</p>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-4xl font-black tracking-tighter">Octubre</h2>
+            </div>
+            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest text-center mb-2">Selecciona un color para pintar los días</p>
+            <div class="flex justify-center gap-3 mb-8">
+                <button id="tool-you" onclick="setDuoTool('you')" class="bg-white shadow-sm px-4 py-2 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-slate-50 transition-all border border-transparent">
+                    <div class="w-2.5 h-2.5 rounded-full bg-kin-blue"></div> Tú
+                </button>
+                <button id="tool-partner" onclick="setDuoTool('partner')" class="bg-white shadow-sm px-4 py-2 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-slate-50 transition-all border border-transparent">
+                    <div class="w-2.5 h-2.5 rounded-full bg-kin-brown"></div> Compa
+                </button>
+                <button id="tool-synced" onclick="setDuoTool('synced')" class="bg-white shadow-sm px-4 py-2 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-slate-50 transition-all border border-transparent">
+                    <div class="flex"><div class="w-2.5 h-2.5 rounded-full bg-kin-blue"></div><div class="w-2.5 h-2.5 rounded-full bg-kin-brown -ml-1"></div></div> Sync
+                </button>
+            </div>
+            <div class="bg-transparent mb-8 px-2">
+                <div id="calendar-grid" class="grid grid-cols-7 text-center gap-y-4 gap-x-2"></div>
+            </div>
+            <div class="bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-black">Programar Dúo</h3>
+                    <span id="duo-selected-date" class="bg-slate-100 text-kin-blue text-[10px] font-bold px-3 py-1.5 rounded-full uppercase">OCT 11</span>
+                </div>
+                <div class="mb-4">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2">Nombre de Sesión</p>
+                    <input type="text" id="duo-session-title" placeholder="Ej: Empuje Fuerza" class="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-bold text-sm text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue">
+                </div>
+                <div class="flex gap-4 mb-6">
+                    <div class="flex-1">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2">Hora Inicio</p>
+                        <div class="bg-kin-bg rounded-xl p-3 flex justify-between items-center border border-slate-100">
+                            <input type="time" id="duo-start-time" value="07:00" class="bg-transparent font-bold text-lg text-slate-800 outline-none w-full appearance-none">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2">Hora Fin</p>
+                        <div class="bg-kin-bg rounded-xl p-3 flex justify-between items-center border border-slate-100">
+                            <input type="time" id="duo-end-time" value="08:30" class="bg-transparent font-bold text-lg text-slate-800 outline-none w-full appearance-none">
+                        </div>
+                    </div>
+                </div>
+                <button onclick="scheduleNewDuo()" class="w-full bg-kin-blue text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-blue-500/30 uppercase tracking-wider active:scale-95 transition-transform">
+                    GUARDAR SESIÓN COMPARTIDA
+                </button>
+            </div>
+            <div class="flex justify-between items-end mb-3">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Próximas Sesiones Confirmadas</p>
+                <span id="upcoming-count" class="bg-kin-blue text-white text-[9px] font-bold px-2 py-0.5 rounded-md">0</span>
+            </div>
+            <div id="upcoming-duos-container" class="space-y-3 mb-8"></div>
+        </section>
+
+        <section id="view-profile" class="view-section">
+            <div class="flex justify-between items-center mb-8 pt-2">
+                <button onclick="switchTab('dashboard')" class="text-kin-blue"><i class="ph-bold ph-arrow-left text-2xl"></i></button>
+                <h2 class="text-2xl font-black">Ajustes</h2>
+                <button class="text-slate-400"><i class="ph-bold ph-dots-three-vertical text-2xl"></i></button>
+            </div>
+            <div class="bg-white rounded-3xl p-6 shadow-sm mb-6 flex flex-col items-center text-center">
+                <div class="relative cursor-pointer group mb-4" onclick="changeAvatar('my')" title="Cambiar foto de perfil">
+                    <img id="profile-avatar-img" src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&q=80&w=200" alt="Marcus" class="w-24 h-24 rounded-2xl object-cover shadow-md group-hover:opacity-80 transition-opacity">
+                    <div class="absolute bottom-[-5px] right-[-5px] bg-kin-blue text-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm border-2 border-white pointer-events-none">
+                        <i class="ph-bold ph-pencil-simple text-sm"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-black leading-none mb-1 uppercase tracking-tight">Marcus<br>Sterling</h3>
+                <p class="text-xs font-medium text-slate-500 mb-4">m.sterling@pro-kinetic.com</p>
+                <button class="w-full bg-blue-50 text-kin-blue font-bold text-sm py-3 rounded-xl mb-4 hover:bg-blue-100 transition-colors">
+                    EDITAR PERFIL
+                </button>
+                <div class="bg-slate-100/80 rounded-xl p-3 w-full mb-3">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estado</p>
+                    <p class="font-black text-kin-blue uppercase">Miembro Premium</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-100 pb-safe pt-2 px-2 pb-4 flex justify-between items-center max-w-md mx-auto left-0 right-0 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
+        <button id="tab-dashboard" onclick="switchTab('dashboard')" class="nav-item active flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph-fill ph-squares-four text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Panel</span>
+        </button>
+        <button id="tab-workout" onclick="switchTab('workout')" class="nav-item flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph ph-barbell text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Entreno</span>
+        </button>
+        <button id="tab-nutrition" onclick="switchTab('nutrition')" class="nav-item flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph ph-fork-knife text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Dieta</span>
+        </button>
+        <button id="tab-notes" onclick="switchTab('notes')" class="nav-item flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph ph-journal-bookmark text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Diario</span>
+        </button>
+        <button id="tab-history" onclick="switchTab('history')" class="nav-item flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph ph-clock-counter-clockwise text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Historia</span>
+        </button>
+        <button id="tab-shared" onclick="switchTab('shared')" class="nav-item flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph ph-users text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Dúo</span>
+        </button>
+        <button id="tab-profile" onclick="switchTab('profile')" class="nav-item flex flex-col items-center gap-1 flex-1">
+            <div class="icon-bg p-1.5"><i class="ph ph-user text-xl"></i></div>
+            <span class="text-[7px] font-bold uppercase tracking-wider">Perfil</span>
+        </button>
+    </nav>
+
+    <div id="meal-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-end justify-center sm:items-center p-4 transition-all">
+        <div class="bg-white w-full max-w-md rounded-[2rem] p-6 shadow-2xl transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black uppercase tracking-tight">Nueva Ingesta</h3>
+                <button onclick="closeMealModal()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200 active:scale-90 transition-transform">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+            <div class="space-y-4 mb-8">
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Tipo de Comida</label>
+                    <select id="meal-type" class="w-full bg-slate-100 rounded-xl p-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue appearance-none">
+                        <option value="Desayuno">Desayuno</option>
+                        <option value="Comida">Comida</option>
+                        <option value="Merienda">Merienda</option>
+                        <option value="Cena">Cena</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Descripción del Plato</label>
+                    <input type="text" id="meal-name" placeholder="Ej. Avena con whey y bayas..." class="w-full bg-slate-100 rounded-xl p-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue">
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Enlace de Foto (URL Opcional)</label>
+                    <input type="text" id="meal-img" placeholder="https://..." class="w-full bg-slate-100 rounded-xl p-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue text-xs">
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Calorías Totales</label>
+                    <input type="number" id="meal-kcal" placeholder="0 KCAL" class="w-full bg-slate-100 rounded-xl p-3 font-black text-xl text-kin-blue outline-none focus:ring-2 focus:ring-kin-blue">
+                </div>
+                <div class="grid grid-cols-3 gap-3 pt-2">
+                    <div>
+                        <label class="text-[8px] font-bold text-kin-blue uppercase tracking-widest mb-1 block">Proteína (g)</label>
+                        <input type="number" id="meal-p" placeholder="0" class="w-full bg-blue-50/50 border border-blue-100 rounded-xl p-2 font-black text-kin-blue text-center outline-none focus:ring-2 focus:ring-kin-blue">
+                    </div>
+                    <div>
+                        <label class="text-[8px] font-bold text-kin-brown uppercase tracking-widest mb-1 block">Carbos (g)</label>
+                        <input type="number" id="meal-c" placeholder="0" class="w-full bg-orange-50/50 border border-orange-100 rounded-xl p-2 font-black text-kin-brown text-center outline-none focus:ring-2 focus:ring-kin-brown">
+                    </div>
+                    <div>
+                        <label class="text-[8px] font-bold text-kin-dark uppercase tracking-widest mb-1 block">Grasas (g)</label>
+                        <input type="number" id="meal-f" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-kin-dark text-center outline-none focus:ring-2 focus:ring-slate-800">
+                    </div>
+                </div>
+            </div>
+            <button onclick="saveNewMeal()" class="w-full bg-kin-blue text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-blue-500/30 uppercase tracking-wider active:scale-95 transition-transform flex justify-center items-center gap-2">
+                <i class="ph-bold ph-check"></i> GUARDAR INGESTA
+            </button>
+        </div>
+    </div>
+
+    <div id="note-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-end justify-center sm:items-center p-4 transition-all">
+        <div class="bg-white w-full max-w-md rounded-[2rem] p-6 shadow-2xl transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black uppercase tracking-tight">Nueva Nota</h3>
+                <button onclick="closeNoteModal()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200 active:scale-90 transition-transform">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+            <div class="space-y-4 mb-8">
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Título</label>
+                    <input type="text" id="note-title" placeholder="Ej. Sensaciones post-entreno..." class="w-full bg-slate-100 rounded-xl p-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue">
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Contenido</label>
+                    <textarea id="note-content" rows="4" placeholder="Escribe aquí tus observaciones..." class="w-full bg-slate-100 rounded-xl p-3 font-medium text-sm text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Enlace de Foto (URL Opcional)</label>
+                    <input type="text" id="note-img" placeholder="https://..." class="w-full bg-slate-100 rounded-xl p-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue text-xs">
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Etiquetas (Separadas por coma)</label>
+                    <input type="text" id="note-tags" placeholder="Ej. Piernas, Recuperación, RP" class="w-full bg-slate-100 rounded-xl p-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-kin-blue text-xs">
+                </div>
+            </div>
+            <button onclick="saveNewNote()" class="w-full bg-kin-blue text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-blue-500/30 uppercase tracking-wider active:scale-95 transition-transform flex justify-center items-center gap-2">
+                <i class="ph-bold ph-check"></i> GUARDAR NOTA
+            </button>
+        </div>
+    </div>
+    
+    <script src="app.js" defer></script>
+</body>
+</html>
