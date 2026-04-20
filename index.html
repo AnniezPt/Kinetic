@@ -3,29 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KINETIC | Memento Mori</title>
+    <title>KINETIC | Master 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
-<body class="pb-32">
+<body>
 
-    <div id="profile-selector" class="fixed inset-0 z-[100] bg-[#0f1115] flex flex-col items-center justify-center p-10 text-center">
-        <h1 class="text-6xl font-black italic tracking-tighter mb-2 text-[#0047ff]">KINETIC</h1>
+    <div id="profile-selector" class="fixed inset-0 z-[100] bg-[#0f1115] flex flex-col items-center justify-center p-10">
+        <h1 class="text-6xl font-black italic tracking-tighter mb-4 text-[#0047ff]">KINETIC</h1>
         <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 mb-20">Identity Access</p>
         <div class="grid grid-cols-2 gap-10 w-full max-w-sm">
-            <button onclick="selectUser('ana')" class="flex flex-col items-center gap-4 group">
-                <div class="w-32 h-32 rounded-[2.8rem] bg-[#1c1f26] border-2 border-slate-800 overflow-hidden shadow-2xl">
-                    <img id="sel-img-ana" src="" class="w-full h-full object-cover">
-                </div>
+            <button onclick="selectUser('ana')" class="flex flex-col items-center gap-4">
+                <div class="w-32 h-32 rounded-[2.8rem] bg-[#1c1f26] border-2 border-slate-800 overflow-hidden shadow-2xl"><img id="sel-img-ana" src="" class="w-full h-full object-cover"></div>
                 <span class="font-black uppercase tracking-widest text-slate-400 italic">Ana</span>
             </button>
-            <button onclick="selectUser('nestor')" class="flex flex-col items-center gap-4 group">
-                <div class="w-32 h-32 rounded-[2.8rem] bg-[#1c1f26] border-2 border-slate-800 overflow-hidden shadow-2xl">
-                    <img id="sel-img-nestor" src="" class="w-full h-full object-cover">
-                </div>
+            <button onclick="selectUser('nestor')" class="flex flex-col items-center gap-4">
+                <div class="w-32 h-32 rounded-[2.8rem] bg-[#1c1f26] border-2 border-slate-800 overflow-hidden shadow-2xl"><img id="sel-img-nestor" src="" class="w-full h-full object-cover"></div>
                 <span class="font-black uppercase tracking-widest text-slate-400 italic">Néstor</span>
             </button>
         </div>
@@ -34,19 +30,16 @@
     <div id="app-content" class="hidden">
         <header class="flex justify-between items-center p-8 sticky top-0 bg-[#0f1115]/90 backdrop-blur-xl z-40">
             <div class="flex items-center gap-4">
-                <img id="header-avatar" src="" class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-800">
-                <div>
-                    <h1 class="font-black text-2xl italic tracking-tighter text-[#0047ff]">KINETIC</h1>
-                    <span id="user-display-name" class="text-[9px] font-black uppercase tracking-widest text-slate-500">--</span>
-                </div>
+                <img id="header-avatar" src="" class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-800" onclick="switchTab('profile')">
+                <div><h1 class="font-black text-2xl italic tracking-tighter text-[#0047ff]">KINETIC</h1><span id="user-display-name" class="text-[9px] font-black uppercase tracking-widest text-slate-500">--</span></div>
             </div>
-            <button onclick="location.reload()" class="w-11 h-11 bg-[#1c1f26] rounded-xl flex items-center justify-center text-slate-500 border border-slate-800"><i class="ph ph-arrow-clockwise text-xl"></i></button>
+            <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div></div>
         </header>
 
         <main class="px-8 max-w-md mx-auto">
             <section id="view-dashboard" class="view-section active">
                 <h2 class="text-6xl font-black italic tracking-tighter uppercase mb-8">PANEL</h2>
-                <div class="bg-[#1c1f26] rounded-[3rem] p-10 shadow-2xl border border-slate-800 flex flex-col items-center mb-6">
+                <div class="card-premium flex flex-col items-center mb-6">
                     <div class="relative w-56 h-56 mb-10">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                             <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#23272f" stroke-width="3"></path>
@@ -58,21 +51,18 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-2 w-full gap-8 border-t border-slate-800 pt-8">
-                        <div onclick="editStat('calories')" class="text-center border-r border-slate-800">
-                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Energía <i class="ph ph-pencil-simple pencil-btn"></i></p>
+                        <div onclick="editStat('calories')" class="text-center border-r border-slate-800 cursor-pointer">
+                            <p class="text-[9px] font-black text-slate-500 uppercase mb-2">Energía <i class="ph ph-pencil-simple text-[#0047ff]"></i></p>
                             <p id="dash-active-cals" class="text-3xl font-black text-[#0047ff] italic">0</p>
                         </div>
-                        <div class="text-center">
-                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Resto</p>
-                            <p id="dash-rem-cals" class="text-3xl font-black italic">--</p>
+                        <div onclick="editStat('streak')" class="text-center cursor-pointer">
+                            <p class="text-[9px] font-black text-slate-500 uppercase mb-2">Racha <i class="ph ph-pencil-simple text-[#0047ff]"></i></p>
+                            <p id="dash-streak" class="text-3xl font-black italic">0</p>
                         </div>
                     </div>
                 </div>
-                <div class="bg-[#1c1f26] rounded-[3rem] p-8 border border-slate-800 shadow-2xl flex justify-between items-center" onclick="editStat('weight')">
-                    <div>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Peso <i class="ph ph-pencil-simple pencil-btn"></i></p>
-                        <p class="text-5xl font-black italic"><span id="dash-current-weight">--</span> <span class="text-xs text-slate-600 not-italic uppercase">KG</span></p>
-                    </div>
+                <div class="card-premium flex justify-between items-center" onclick="editStat('weight')">
+                    <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Peso Actual <i class="ph ph-pencil-simple text-[#0047ff]"></i></p><p class="text-5xl font-black italic"><span id="dash-current-weight">--</span> <span class="text-xs text-slate-600 not-italic uppercase">KG</span></p></div>
                     <i class="ph ph-trend-up text-4xl text-slate-800"></i>
                 </div>
             </section>
@@ -86,22 +76,19 @@
             </section>
 
             <section id="view-nutrition" class="view-section">
-                <h2 class="text-5xl font-black italic uppercase pt-6 mb-8 tracking-tighter">DIETA</h2>
-                <div class="bg-[#1c1f26] p-10 rounded-[3rem] shadow-2xl mb-8 border border-slate-800">
-                    <p class="text-4xl font-black italic mb-8 tracking-tighter"><span id="nut-total-kcal">0</span> <span class="text-xs text-slate-500 uppercase not-italic">kcal hoy</span></p>
+                <h2 class="text-5xl font-black italic uppercase pt-6 mb-8">DIETA</h2>
+                <div class="card-premium mb-8">
+                    <p class="text-4xl font-black italic mb-8"><span id="nut-total-kcal">0</span> <span class="text-xs text-slate-500 uppercase not-italic tracking-widest">kcal consumidas</span></p>
                     <div class="flex gap-8 mb-8 border-t border-slate-800 pt-6">
                         <div><p class="text-[9px] font-black text-slate-500 uppercase mb-1">Proteína</p><p class="text-xl font-black italic text-[#0047ff]"><span id="nut-total-pro">0</span>g</p></div>
                         <div><p class="text-[9px] font-black text-slate-500 uppercase mb-1">Grasas</p><p class="text-xl font-black italic text-[#ff5c00]"><span id="nut-total-fat">0</span>g</p></div>
                     </div>
                     <div id="hydration-drops" class="flex justify-between mb-4"></div>
-                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="hydration-bar" class="h-full bg-[#0047ff] transition-all duration-700"></div></div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="hydration-bar" class="h-full bg-[#0047ff]"></div></div>
                 </div>
-                
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4 italic">Hoy</h3>
-                <div id="today-meals" class="space-y-4 mb-10"></div>
-                <button onclick="openModal('modal-meal')" class="w-full bg-[#0047ff] font-black py-6 rounded-[2.5rem] uppercase text-[10px] tracking-widest mb-16 shadow-xl">+ Añadir Comida</button>
-
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4 italic">Historial de Días</h3>
+                <div id="today-meals" class="space-y-4 mb-8"></div>
+                <button onclick="openModal('modal-meal')" class="btn-primary mb-12">+ Añadir Comida</button>
+                <h3 class="text-[10px] font-black uppercase text-slate-600 mb-4 tracking-widest italic">Historial Anterior</h3>
                 <div id="history-meals" class="space-y-4"></div>
             </section>
 
@@ -111,89 +98,58 @@
                     <h2 id="cal-title" class="text-3xl font-black italic uppercase text-[#0047ff]">--</h2>
                     <button onclick="changeMonth(1)" class="w-12 h-12 bg-[#1c1f26] rounded-2xl border border-slate-800"><i class="ph ph-caret-right"></i></button>
                 </div>
-                <div class="flex justify-center gap-3 mb-8">
-                    <button id="tool-you" onclick="setTool('you')" class="bg-[#1c1f26] px-8 py-5 rounded-[2rem] text-[10px] font-black flex items-center gap-3 border-2 border-transparent">
-                        <div class="w-3 h-3 rounded-full bg-[#0047ff] shadow-[0_0_10px_#0047ff]"></div> MI DÍA
+                <div class="flex justify-center gap-3 mb-10">
+                    <button id="tool-you" onclick="setTool('you')" class="bg-[#1c1f26] px-8 py-5 rounded-[2rem] text-[10px] font-black flex items-center gap-3 border-2 border-transparent transition-all">
+                        <div class="w-3 h-3 rounded-full bg-[#0047ff]"></div> MI DÍA
                     </button>
-                    <button id="tool-sync" onclick="setTool('sync')" class="bg-[#1c1f26] px-8 py-5 rounded-[2rem] text-[10px] font-black flex items-center gap-3 border-2 border-transparent">
+                    <button id="tool-sync" onclick="setTool('sync')" class="bg-[#1c1f26] px-8 py-5 rounded-[2rem] text-[10px] font-black flex items-center gap-3 border-2 border-transparent transition-all">
                         <div class="flex -space-x-1"><div class="w-3 h-3 rounded-full bg-[#0047ff]"></div><div class="w-3 h-3 rounded-full bg-[#8b4513]"></div></div> SYNC
                     </button>
                 </div>
-                <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center mb-12"></div>
-                
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-[10px] font-black uppercase text-slate-500 italic">Sesiones Programadas</h3>
-                    <button onclick="openModal('modal-session')" class="text-[#0047ff] font-black text-[10px] uppercase">+ Programar</button>
-                </div>
-                <div id="sessions-container" class="space-y-4"></div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2.5 mb-12"></div>
+                <h3 class="text-[10px] font-black uppercase text-slate-500 mb-4 italic tracking-widest">Sesiones Programadas</h3>
+                <div id="sessions-container" class="space-y-4 mb-6"></div>
+                <button onclick="openModal('modal-session')" class="w-full bg-slate-900 border border-slate-800 py-4 rounded-2xl text-[10px] font-black uppercase text-[#0047ff] tracking-widest">+ Agendar Sesión</button>
             </section>
 
             <section id="view-profile" class="view-section">
-                <h2 class="text-5xl font-black italic uppercase pt-6 mb-12 tracking-tighter">PERFIL</h2>
-                <div class="bg-[#1c1f26] rounded-[3rem] p-12 text-center border border-slate-800 shadow-2xl flex flex-col items-center">
+                <h2 class="text-5xl font-black italic uppercase pt-6 mb-12">PERFIL</h2>
+                <div class="card-premium text-center flex flex-col items-center">
                     <div class="relative group cursor-pointer mb-8" onclick="document.getElementById('img-upload').click()">
-                        <img id="profile-img-big" src="" class="w-44 h-44 rounded-[3.5rem] object-cover shadow-2xl border-4 border-slate-800 group-hover:opacity-50 transition-all">
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                            <i class="ph ph-camera text-4xl text-white"></i>
-                        </div>
+                        <img id="profile-img-big" src="" class="w-44 h-44 rounded-[3.5rem] object-cover border-4 border-slate-800 shadow-2xl transition-all group-hover:opacity-60">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-camera text-4xl"></i></div>
                     </div>
-                    <h3 id="profile-name-big" class="text-4xl font-black italic uppercase tracking-tighter mb-2">--</h3>
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-12">Memento Mori</p>
-                    <button onclick="logout()" class="w-full bg-[#0f1115] border border-slate-800 font-black py-5 rounded-2xl uppercase text-[10px] tracking-widest text-[#0047ff] active:scale-95 transition-all">Cambiar de Perfil</button>
+                    <h3 id="profile-name-big" class="text-4xl font-black italic uppercase mb-2 tracking-tighter">--</h3>
+                    <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.4em] mb-12">MEMENTO MORI PROJECT</p>
+                    <button onclick="logout()" class="btn-primary bg-slate-900 border border-slate-800 text-[#0047ff]">Cerrar Sesión / Cambiar</button>
                 </div>
             </section>
         </main>
 
         <nav class="fixed bottom-0 w-full bg-[#0f1115]/95 backdrop-blur-2xl border-t border-slate-800 flex justify-between items-center px-4 py-6 max-w-md mx-auto left-0 right-0 z-50">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item active flex-1 flex flex-col items-center gap-1.5">
-                <div class="icon-box w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph-fill ph-squares-four text-2xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Panel</span>
-            </button>
-            <button onclick="switchTab('workout')" id="tab-workout" class="nav-item flex-1 flex flex-col items-center gap-1.5">
-                <div class="icon-box w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-barbell text-2xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Entreno</span>
-            </button>
-            <button onclick="switchTab('nutrition')" id="tab-nutrition" class="nav-item flex-1 flex flex-col items-center gap-1.5">
-                <div class="icon-box w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-fork-knife text-2xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Dieta</span>
-            </button>
-            <button onclick="switchTab('shared')" id="tab-shared" class="nav-item flex-1 flex flex-col items-center gap-1.5">
-                <div class="icon-box w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-users text-2xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Dúo</span>
-            </button>
-            <button onclick="switchTab('profile')" id="tab-profile" class="nav-item flex-1 flex flex-col items-center gap-1.5">
-                <div class="icon-box w-14 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-user text-2xl"></i></div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Perfil</span>
-            </button>
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item active"><div class="icon-box"><i class="ph-fill ph-squares-four text-2xl"></i></div><span class="text-[8px] font-black uppercase">Panel</span></button>
+            <button onclick="switchTab('workout')" id="tab-workout" class="nav-item"><div class="icon-box"><i class="ph ph-barbell text-2xl"></i></div><span class="text-[8px] font-black uppercase">Entreno</span></button>
+            <button onclick="switchTab('nutrition')" id="tab-nutrition" class="nav-item"><div class="icon-box"><i class="ph ph-fork-knife text-2xl"></i></div><span class="text-[8px] font-black uppercase">Dieta</span></button>
+            <button onclick="switchTab('shared')" id="tab-shared" class="nav-item"><div class="icon-box"><i class="ph ph-users text-2xl"></i></div><span class="text-[8px] font-black uppercase">Dúo</span></button>
+            <button onclick="switchTab('profile')" id="tab-profile" class="nav-item"><div class="icon-box"><i class="ph ph-user text-2xl"></i></div><span class="text-[8px] font-black uppercase">Perfil</span></button>
         </nav>
     </div>
 
-    <div id="modal-meal" class="modal" onclick="closeOnOverlay(event)">
-        <div class="modal-content">
-            <h4 class="text-2xl font-black italic mb-6">Nueva Comida</h4>
-            <input type="text" id="m-name" placeholder="Nombre (ej. Pollo con arroz)">
-            <input type="number" id="m-kcal" placeholder="Kcal">
-            <div class="grid grid-cols-2 gap-3">
-                <input type="number" id="m-pro" placeholder="Pro (g)">
-                <input type="number" id="m-fat" placeholder="Fat (g)">
-            </div>
-            <button onclick="document.getElementById('m-img').click()" class="w-full border border-dashed border-slate-700 p-4 rounded-xl text-xs font-black text-slate-500 mb-6 uppercase tracking-widest italic">+ Añadir Foto</button>
-            <input type="file" id="m-img" class="hidden" accept="image/*">
-            <button onclick="saveMeal()" class="w-full bg-[#0047ff] py-5 rounded-2xl font-black uppercase text-xs">Guardar</button>
-        </div>
-    </div>
+    <div id="modal-meal" class="modal" onclick="closeOverlay(event)"><div class="modal-content">
+        <h4 class="text-2xl font-black italic mb-6">Añadir Comida</h4>
+        <input type="text" id="m-name" placeholder="¿Qué has comido?">
+        <input type="number" id="m-kcal" placeholder="Kcal">
+        <div class="grid grid-cols-2 gap-3"><input type="number" id="m-pro" placeholder="Pro (g)"><input type="number" id="m-fat" placeholder="Fat (g)"></div>
+        <button onclick="document.getElementById('m-img-file').click()" class="w-full border border-dashed border-slate-700 p-4 rounded-xl text-[10px] font-black text-slate-500 mb-6 uppercase italic tracking-widest">+ Añadir Foto</button>
+        <input type="file" id="m-img-file" class="hidden" accept="image/*">
+        <button onclick="saveMeal()" class="btn-primary">Guardar Comida</button>
+    </div></div>
 
-    <div id="modal-session" class="modal" onclick="closeOnOverlay(event)">
-        <div class="modal-content">
-            <h4 class="text-2xl font-black italic mb-6">Programar Sesión</h4>
-            <input type="date" id="s-date">
-            <div class="grid grid-cols-2 gap-3">
-                <input type="time" id="s-start">
-                <input type="time" id="s-end">
-            </div>
-            <button onclick="saveSession()" class="w-full bg-[#0047ff] py-5 rounded-2xl font-black uppercase text-xs">Agendar</button>
-        </div>
-    </div>
+    <div id="modal-session" class="modal" onclick="closeOverlay(event)"><div class="modal-content">
+        <h4 class="text-2xl font-black italic mb-6">Programar Sesión</h4>
+        <input type="date" id="s-date"><div class="grid grid-cols-2 gap-3"><input type="time" id="s-start"><input type="time" id="s-end"></div>
+        <button onclick="saveSession()" class="btn-primary">Agendar</button>
+    </div></div>
 
     <input type="file" id="img-upload" class="hidden" accept="image/*">
     <script src="app.js"></script>
